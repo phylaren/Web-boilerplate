@@ -11,7 +11,7 @@
    <title>Teachinder</title>
 
    <link rel="stylesheet" href="./css/app.css">
-   <script type="text/javascript" src="./js/app.js" defer></script>
+   <script type="module" src="./js/app.js" defer></script>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
@@ -74,7 +74,8 @@
          <div class="teachers-list">
             <ul id="teachers-grid">
                <!-- replace all img elements with divs -->
-               <li class="favorite">
+               <li style="position: relative">
+                  <span id="THIS-ELEMENT" class="favorite"></span>
                   <img src="images/man2.png" alt="teacher"></img>
                   <h2 class="teacher-name">Ihor Tkachuk</h2>
                   <p class="teacher-speciality">Math</p>
@@ -92,7 +93,7 @@
                   <p class="teacher-speciality">Vocal</p>
                   <p class="teacher-origin">Denmark</p>
                </li>
-               <li class="favorite">
+               <li>
                   <img src="images/man1.png" alt="teacher">
                   <h2 class="teacher-name">John Burke</h2>
                   <p class="teacher-speciality">Computer Science</p>

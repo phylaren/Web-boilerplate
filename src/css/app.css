@@ -569,17 +569,16 @@ dialog {
     }
 }
 
-.favorite {
-    position: relative;
 
-    &::after {
-        content: "⭐";
-        position: absolute;
-        top: 7%;
-        right: 7%;
-        font-size: 2rem;
+span#THIS-ELEMENT.favorite {
+    position: absolute;
+    top: calc(0% + 1rem);
+    right: calc(0% + 2rem);
+}
 
-    }
+span#THIS-ELEMENT.favorite::after {
+    content: "⭐";
+    font-size: 2rem;
 }
 
 
