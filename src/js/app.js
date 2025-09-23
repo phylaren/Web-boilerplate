@@ -1,42 +1,38 @@
 import { randomUserMock, additionalUsers } from './mock-data.js';
+export const userList = validateUsers(formatArrays(randomUserMock, additionalUsers));;
 
-addEventListener('DOMContentLoaded', () => {
-    let userList = formatArrays(randomUserMock, additionalUsers);
-    console.log("=== Formatted array ===");
-    console.log(userList);
-
-    console.log("=== Validated users array ===");
-    let validatedUsers = validateUsers(userList);
-    console.log(validatedUsers);
-
-    console.log("=== Filtered users array ===");
-    const filters = {
-      country: [],             //can be empty 
-      ageRange: [20, 70],      //can be empty            
-      gender: null,            //null or "male" or "female"        
-      favorite: false          //null or true or false          
-    };
-    let filteredUsers = filterArray(userList, filters);
-    console.log(filteredUsers);
-
-    console.log("=== Sorted users array ===");
-    let sorteredUsers = sortArray(userList, "age", "asc");
-    console.log(sorteredUsers);
-    //using Date object to sort by date
+//addEventListener('DOMContentLoaded', () => {
+  
     
-    let sorteredUsersByDate = sortArray(userList, "date", "asc");
-    console.log(sorteredUsersByDate);
+
+    // console.log("=== Filtered users array ===");
+    // const filters = {
+    //   country: [],             //can be empty 
+    //   ageRange: [20, 70],      //can be empty            
+    //   gender: null,            //null or "male" or "female"        
+    //   favorite: false          //null or true or false          
+    // };
+    // let filteredUsers = filterArray(userList, filters);
+    // console.log(filteredUsers);
+
+    // console.log("=== Sorted users array ===");
+    // let sorteredUsers = sortArray(userList, "age", "asc");
+    // console.log(sorteredUsers);
+    // //using Date object to sort by date
+    
+    // let sorteredUsersByDate = sortArray(userList, "date", "asc");
+    // console.log(sorteredUsersByDate);
   
 
-    console.log("=== Search users array ===");
-    let foundUsers = findInArray(userList, "Germany");
-    console.log(foundUsers);
+    // console.log("=== Search users array ===");
+    // let foundUsers = findInArray(userList, "Germany");
+    // console.log(foundUsers);
 
-    console.log("=== Percentage array ===");
-    let percentage = matchPercentage(userList, user => user.age>30);
-    console.log("percentage:" + percentage);
+    // console.log("=== Percentage array ===");
+    // let percentage = matchPercentage(userList, user => user.age>30);
+    // console.log("percentage:" + percentage);
 
-});
+//});
 
 function formatArrays(...data) {
   const allUsers = [];
@@ -49,8 +45,8 @@ function formatArrays(...data) {
   });
 
   allUsers.forEach(user => user.phone = normalizePhoneNumber(user.phone, user.country));
-  const mergedUsers = mergeDuplicates(allUsers);
-
+  let mergedUsers = mergeDuplicates(allUsers);
+  mergedUsers = validateUsers(mergedUsers);
   return mergedUsers;
 }
 
@@ -126,7 +122,7 @@ function showFormattedArray(userList){
 function getRandomDiscipline() {
   const courses = [
     "Mathematics", "Physics", "English", "Computer Science", "Dancing",
-    "Chess", "Biology", "Chemistry", "Law", "Art", "Medicine", "Statistics"
+    "Chess", "Biology", "Chemistry", "Law", "Art"
   ];
   return courses[Math.floor(Math.random() * courses.length)];
 }

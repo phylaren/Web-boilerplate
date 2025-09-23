@@ -12,6 +12,7 @@
 
    <link rel="stylesheet" href="./css/app.css">
    <script type="module" src="./js/app.js" defer></script>
+   <script type="module" src="./js/script.js" defer></script>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
@@ -32,7 +33,7 @@
             <li><a href="#">Favorites</a></li>
             <li><a href="#">About</a></li>
          </ul>
-         <button id="add-teacher-header">Add teacher</button>
+         <button class="add-teacher">Add teacher</button>
       </nav>
    </header>
    <hr>
@@ -73,9 +74,8 @@
          </ul>
          <div class="teachers-list">
             <ul id="teachers-grid">
-               <!-- replace all img elements with divs -->
                <li style="position: relative">
-                  <span id="THIS-ELEMENT" class="favorite"></span>
+                  <span id="star" class="favorite"></span>
                   <img src="images/man2.png" alt="teacher"></img>
                   <h2 class="teacher-name">Ihor Tkachuk</h2>
                   <p class="teacher-speciality">Math</p>
@@ -132,131 +132,25 @@
          <table>
             <thead>
                <tr>
-                  <th>Name</th>
-                  <th>Speciality</th>
-                  <th>Age</th>
-                  <th>Gender</th>
-                  <th>Nationality</th>
+                  <th id="name-table">Name</th>
+                  <th id="speciality-table">Speciality</th>
+                  <th id="age-table">Age</th>
+                  <th id="gender-table">Gender</th>
+                  <th id="country-table">Country</th>
                </tr>
             </thead>
             <tbody>
-               <tr>
-                  <td>Daisy Alexander</td>
-                  <td>Chemistry</td>
-                  <td>28</td>
-                  <td>Female</td>
-                  <td>Vietnam</td>
-               </tr>
-               <tr>
-                  <td>Julia Bradley</td>
-                  <td>Math</td>
-                  <td>26</td>
-                  <td>Female</td>
-                  <td>USA</td>
-               </tr>
-               <tr>
-                  <td>Rita Hart</td>
-                  <td>Art</td>
-                  <td>41</td>
-                  <td>Female</td>
-                  <td>Ireland</td>
-               </tr>
-               <tr>
-                  <td>Jonathan Jacobs</td>
-                  <td>Math</td>
-                  <td>32</td>
-                  <td>Male</td>
-                  <td>England</td>
-               </tr>
-               <tr>
-                  <td>Nathaniel White</td>
-                  <td>Computer Science</td>
-                  <td>37</td>
-                  <td>Male</td>
-                  <td>Austria</td>
-               </tr>
-               <tr>
-                  <td>Frank Medina</td>
-                  <td>English</td>
-                  <td>43</td>
-                  <td>Male</td>
-                  <td>Italy</td>
-               </tr>
-               <tr>
-                  <td>Ella Curtis</td>
-                  <td>Chess</td>
-                  <td>34</td>
-                  <td>Female</td>
-                  <td>USA</td>
-               </tr>
-               <tr>
-                  <td>Claire Simmons</td>
-                  <td>Art</td>
-                  <td>38</td>
-                  <td>Female</td>
-                  <td>Netherlands</td>
-               </tr>
-               <tr>
-                  <td>Benjamin Knight</td>
-                  <td>Biology</td>
-                  <td>44</td>
-                  <td>Male</td>
-                  <td>Scotland</td>
-               </tr>
-               <tr>
-                  <td>Norma Rose</td>
-                  <td>Statistics</td>
-                  <td>36</td>
-                  <td>Female</td>
-                  <td>France</td>
-               </tr>
+               
             </tbody>
          </table>
          <div>
-            <ul id="table-navigation">
-               <li>1</li>
-               <li>2</li>
-               <li>3</li>
-               <li>...</li>
-               <li>Last</li>
-            </ul>
+            <ul id="table-navigation"></ul>
          </div>
       </section>
       <hr>
       <section class="favorites">
          <h1>Favorites</h1>
-         <div class="carousel carousel--scroll-buttons">
-            <div class="carousel__slide" data-label="Slide 1">
-               <img src="images/man2.png" alt="teacher">
-               <h2 class="teacher-name">Ihor Tkachuk</h2>
-               <p class="teacher-origin">Ukraine</p>
-            </div>
-            <div class="carousel__slide" data-label="Slide 2">
-               <div data-initials="A.M" data-has-photo="false"></div>
-               <h2 class="teacher-name">Anna Muzychuk</h2>
-               <p class="teacher-origin">Belarus</p>
-            </div>
-            <div class="carousel__slide" data-label="Slide 3">
-               <img src="images/man1.png" alt="teacher">
-               <h2 class="teacher-name">John Burke</h2>
-               <p class="teacher-origin">Belgium</p>
-            </div>
-            <div class="carousel__slide" data-label="Slide 4">
-               <img src="images/woman1.png" alt="teacher">
-               <h2 class="teacher-name">Ari Tang</h2>
-               <p class="teacher-origin">China</p>
-            </div>
-            <div class="carousel__slide" data-label="Slide 5">
-               <img src="images/woman2.png" alt="teacher">
-               <h2 class="teacher-name">Floor Jansen</h2>
-               <p class="teacher-origin">Denmark</p>
-            </div>
-            <div class="carousel__slide" data-label="Slide 5">
-               <img src="images/woman2.png" alt="teacher">
-               <h2 class="teacher-name">Floor Jansen</h2>
-               <p class="teacher-origin">Denmark</p>
-            </div>
-         </div>
+         <div class="carousel carousel--scroll-buttons"></div>
       </section>
       <hr>
       <section class="about">
@@ -280,27 +174,35 @@
             <li><a href="#">Favorites</a></li>
             <li><a href="#">About</a></li>
          </ul>
-         <button class="add-teacher-footer">Add teacher</button>
+         <button class="add-teacher">Add teacher</button>
       </nav>
    </footer>
 
-   <dialog class="add-teacher-dialog">
+   <dialog id="add-teacher-dialog">
       <div class="dialog-panel">
          <h2>Add teacher</h2>
-         <button class="close-dialog">x</button>
+         <button class="close-dialog" aria-label="Close dialog">x</button>
       </div>
       <form>
          <div class="input-container">
             <label for="teacher-name">Name</label>
-            <input placeholder="Enter name" type="text">
+            <input id="teacher-name" name="teacher-name" placeholder="Enter name" type="text" required>
          </div>
 
          <div class="input-container">
             <label for="speciality">Speciality</label>
-            <select>
-               <option>Math</option>
-               <option>English</option>
-               <option>Chemistry</option>
+            <select id="speciality" name="speciality" required>
+               <option value="">Select speciality</option>
+               <option value="Mathematics">Mathematics</option>
+               <option value="Physics">Physics</option>
+               <option value="English">English</option>
+               <option value="Computer Science">Computer Science</option>
+               <option value="Dancing">Dancing</option>
+               <option value="Chess">Chess</option>
+               <option value="Biology">Biology</option>
+               <option value="Chemistry">Chemistry</option>
+               <option value="Law">Law</option>
+               <option value="Art">Art</option>
             </select>
          </div>
 
@@ -308,73 +210,85 @@
 
             <div class="input-container">
                <label for="teacher-country">Country</label>
-               <select name="teacher-country" id="">
+               <select name="teacher-country" id="teacher-country" required>
+                  <option value="">Select country</option>
                   <option value="Ukraine">Ukraine</option>
+                  <option value="United States">United States</option>
+                  <option value="Canada">Canada</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="Germany">Germany</option>
+                  <option value="France">France</option>
+                  <option value="Italy">Italy</option>
+                  <option value="Spain">Spain</option>
+                  <option value="Australia">Australia</option>
+                  <option value="India">India</option>
+                  <option value="China">China</option>
+                  <option value="Japan">Japan</option>
+                  <option value="Brazil">Brazil</option>
+                  <option value="South Africa">South Africa</option>
                </select>
             </div>
 
             <div class="input-container">
                <label for="teacher-city">City</label>
-               <input type="text" name="teacher-city" id="teacher-city">
+               <input type="text" name="teacher-city" id="teacher-city" required>
             </div>
 
             <div class="input-container">
                <label for="teacher-email">Email</label>
-               <input type="email" name="teacher-email" id="teacher-email">
-
+               <input type="email" name="teacher-email" id="teacher-email" required>
             </div>
 
             <div class="input-container">
                <label for="teacher-phone">Phone</label>
-               <input type="tel" name="teacher-phone" id="teacher-phone">
+               <input type="tel" name="teacher-phone" id="teacher-phone" required>
             </div>
 
             <div class="input-container">
                <label for="teacher-birth">Date of birth</label>
-               <input type="date" name="teacher-birth" id="teacher-birth">
+               <input type="date" name="teacher-birth" id="teacher-birth" required>
             </div>
 
             <div class="input-container invisible">
-               <label for="teacher-birth">Date of birth</label>
-               <input type="date" name="teacher-birth" id="teacher-birth">
+               <label for="teacher-birth-hidden">Date of birth</label>
+               <input type="date" name="teacher-birth-hidden" id="teacher-birth-hidden" required>
             </div>
 
             <div class="input-container row">
                <label for="teacher-sex" class="margin-right">Sex</label>
                <label for="Male">Male</label>
-               <input type="radio" name="teacher-sex" value="Male">
+               <input type="radio" name="teacher-sex" id="Male" value="Male" required>
                <label for="Female">Female</label>
-               <input type="radio" name="teacher-sex" value="Female">
+               <input type="radio" name="teacher-sex" id="Female" value="Female" required>
             </div>
 
             <div class="input-container row invisible">
-               <label for="teacher-sex">Sex</label>
-               <label for="Male" class="sex">Male
-                  <input type="radio" name="teacher-sex" value="Male">
+               <label for="teacher-sex-hidden">Sex</label>
+               <label for="Male-hidden" class="sex">Male
+                  <input type="radio" name="teacher-sex-hidden" id="Male-hidden" value="Male" required>
                </label>
-               <label for="Female" class="sex">Female
-                  <input type="radio" name="teacher-sex" value="Female">
+               <label for="Female-hidden" class="sex">Female
+                  <input type="radio" name="teacher-sex-hidden" id="Female-hidden" value="Female" required>
                </label>
             </div>
 
             <div class="input-container row">
                <label for="teacher-color">Background color</label>
-               <input type="color">
+               <input type="color" name="teacher-color" id="teacher-color" required>
             </div>
 
             <div class="input-container row invisible">
-               <label for="teacher-color">Background color</label>
-               <input type="color">
+               <label for="teacher-color-hidden">Background color</label>
+               <input type="color" name="teacher-color-hidden" id="teacher-color-hidden" required>
             </div>
          </div>
-
 
          <div class="input-container">
             <label for="teacher-notes">Notes(optional)</label>
             <textarea name="teacher-notes" id="teacher-notes" rows="10"></textarea>
          </div>
 
-         <button type="submit">Add</button>
+         <button id="add-teacher" type="submit">Add</button>
       </form>
    </dialog>
 
@@ -396,10 +310,11 @@
       </div>
 
       <div class="bottom-info">
-         <p class="teacher-notes align-left">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+         <p class="teacher-notes align-left">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.
+         </p>
          <a href="#" class="blue dotted-underline align-left">toggle map</a>
       </div>
-   
+
    </dialog>
 
 </body>

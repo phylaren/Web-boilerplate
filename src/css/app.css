@@ -176,14 +176,16 @@ nav {
 
     & ul#teachers-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        grid-template-columns: repeat(auto-fit, 170px);
         gap: 1rem;
+        justify-content: center; 
 
         & li {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            position: relative;
         }
 
         & img {
@@ -376,6 +378,14 @@ ul#table-navigation {
     justify-content: space-between;
 
     color: var(--table-navigation);
+
+    &>li.page{
+        cursor: pointer;
+        
+        &:hover{
+            text-decoration: underline;
+        }
+    }
 }
 
 hr {
@@ -447,7 +457,7 @@ dialog {
         }
     }
 
-    &.add-teacher-dialog {
+    &#add-teacher-dialog {
         &>form {
             padding: 1.5rem;
             display: flex;
@@ -570,17 +580,20 @@ dialog {
 }
 
 
-span#THIS-ELEMENT.favorite {
+span#star.favorite {
     position: absolute;
-    top: calc(0% + 1rem);
-    right: calc(0% + 2rem);
+    top: calc(0% + 5%);
+    right: calc(0% + 5%);
 }
 
-span#THIS-ELEMENT.favorite::after {
+span#star.favorite::after {
     content: "⭐";
     font-size: 2rem;
 }
 
+.hidden{
+    visibility: hidden;
+}
 
 
 @media screen and (max-width: 1024px) {
