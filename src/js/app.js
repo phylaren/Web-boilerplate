@@ -2,35 +2,35 @@ import { randomUserMock, additionalUsers } from './mock-data.js';
 export const userList = validateUsers(formatArrays(randomUserMock, additionalUsers));;
 
 //addEventListener('DOMContentLoaded', () => {
-  
-    
 
-    // console.log("=== Filtered users array ===");
-    // const filters = {
-    //   country: [],             //can be empty 
-    //   ageRange: [20, 70],      //can be empty            
-    //   gender: null,            //null or "male" or "female"        
-    //   favorite: false          //null or true or false          
-    // };
-    // let filteredUsers = filterArray(userList, filters);
-    // console.log(filteredUsers);
 
-    // console.log("=== Sorted users array ===");
-    // let sorteredUsers = sortArray(userList, "age", "asc");
-    // console.log(sorteredUsers);
-    // //using Date object to sort by date
-    
-    // let sorteredUsersByDate = sortArray(userList, "date", "asc");
-    // console.log(sorteredUsersByDate);
-  
 
-    // console.log("=== Search users array ===");
-    // let foundUsers = findInArray(userList, "Germany");
-    // console.log(foundUsers);
+// console.log("=== Filtered users array ===");
+// const filters = {
+//   country: [],             //can be empty 
+//   ageRange: [20, 70],      //can be empty            
+//   gender: null,            //null or "male" or "female"        
+//   favorite: false          //null or true or false          
+// };
+// let filteredUsers = filterArray(userList, filters);
+// console.log(filteredUsers);
 
-    // console.log("=== Percentage array ===");
-    // let percentage = matchPercentage(userList, user => user.age>30);
-    // console.log("percentage:" + percentage);
+// console.log("=== Sorted users array ===");
+// let sorteredUsers = sortArray(userList, "age", "asc");
+// console.log(sorteredUsers);
+// //using Date object to sort by date
+
+// let sorteredUsersByDate = sortArray(userList, "date", "asc");
+// console.log(sorteredUsersByDate);
+
+
+// console.log("=== Search users array ===");
+// let foundUsers = findInArray(userList, "Germany");
+// console.log(foundUsers);
+
+// console.log("=== Percentage array ===");
+// let percentage = matchPercentage(userList, user => user.age>30);
+// console.log("percentage:" + percentage);
 
 //});
 
@@ -84,7 +84,7 @@ function formatUser(user) {
 
 function mergeDuplicates(users) {
   const merged = {};
-  
+
   users.forEach(user => {
     const key = `${user.id}_${user.full_name}`;
     if (!merged[key]) {
@@ -92,8 +92,8 @@ function mergeDuplicates(users) {
     } else {
       let userObj = merged[key];
       for (let field in user) {
-        if (userObj[field] === undefined || userObj[field] === null) {   
-          userObj[field] = user[field];   
+        if (userObj[field] === undefined || userObj[field] === null) {
+          userObj[field] = user[field];
         }
       }
     }
@@ -101,22 +101,22 @@ function mergeDuplicates(users) {
   return Object.values(merged);
 }
 
-function showFormattedArray(userList){
-    for (let user of userList) {
-        for (let prop in user) {
-            if(typeof(user[prop]) === "object"){
-                console.log(`${prop}: {\n`)
-                let obj = user[prop];
-                for(let objProp in obj){
-                    console.log(`${objProp}: ${obj[objProp]}`)
-                }
-                console.log(`}`)
-                continue;
-            }
-            console.log(`${prop}: ${user[prop]}`)
+function showFormattedArray(userList) {
+  for (let user of userList) {
+    for (let prop in user) {
+      if (typeof (user[prop]) === "object") {
+        console.log(`${prop}: {\n`)
+        let obj = user[prop];
+        for (let objProp in obj) {
+          console.log(`${objProp}: ${obj[objProp]}`)
         }
-        console.log("")
+        console.log(`}`)
+        continue;
+      }
+      console.log(`${prop}: ${user[prop]}`)
     }
+    console.log("")
+  }
 }
 
 function getRandomDiscipline() {
@@ -137,7 +137,7 @@ function getRandomBoolean() {
   return Math.random() < 0.5;
 }
 
-function generateId() {
+export function generateId() {
   return Math.random().toString(36).substr(2, 9);
 }
 
@@ -154,10 +154,10 @@ function getRandomInt(min, max) {
 
 */
 
-function validateUsers(array){
-    return [...array].filter(user => validateUser(user));
+function validateUsers(array) {
+  return [...array].filter(user => validateUser(user));
 }
-function validateUser(user){
+function validateUser(user) {
   // if (!isCorrectFullName(user.full_name)) console.log("Invalid name:", user.full_name);
   // if (!isSentenseCase(user.city)) console.log("Invalid city:", user.city);
   // if (!isSentenseCase(user.country)) console.log("Invalid country:", user.country);
@@ -166,30 +166,30 @@ function validateUser(user){
   // if (!isCorrectEmail(user.email)) console.log("Invalid email:", user.email);
 
   return isCorrectFullName(user.full_name) &&
-         isSentenseCase(user.city) &&
-         isSentenseCase(user.country) &&
-         isCorrectNote(user.note) &&
-         Number.isInteger(user.age) &&
-         isCorrectEmail(user.email);
+    isSentenseCase(user.city) &&
+    isSentenseCase(user.country) &&
+    isCorrectNote(user.note) &&
+    Number.isInteger(user.age) &&
+    isCorrectEmail(user.email);
 }
 
-function isCorrectFullName(fullName){
+function isCorrectFullName(fullName) {
   if (!fullName || typeof fullName !== 'string') return false;
   let fullNameArray = fullName.trim().split(/\s+/);
   if (fullNameArray.length < 2) return false;
-  for (let word of fullNameArray){
+  for (let word of fullNameArray) {
     if (word[0] !== word[0].toUpperCase()) return false;
   }
   return true;
 }
 
-function isCorrectNote(note){
+function isCorrectNote(note) {
   if (note === undefined || note === null) return false;
   if (note.trim() === "") return true; // allow empty notes
   let noteArray = note.split(/(?<=[.?!])\s+/);
-  for (let sentence of noteArray){
+  for (let sentence of noteArray) {
     sentence = sentence.trim();
-    if (sentence.length > 0 && !isSentenseCase(sentence)){
+    if (sentence.length > 0 && !isSentenseCase(sentence)) {
       return false;
     }
   }
@@ -197,17 +197,17 @@ function isCorrectNote(note){
 }
 
 //for gender, state, city, country 
-function isSentenseCase(sentence){
+function isSentenseCase(sentence) {
   if (!sentence || typeof sentence !== 'string') return false;
   return sentence[0] === sentence[0].toUpperCase();
 }
 
-function isCorrectEmail(email){
+function isCorrectEmail(email) {
   if (!email || typeof email !== 'string') return false;
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function normalizePhoneNumber(number, country){
+function normalizePhoneNumber(number, country) {
   if (!number || typeof number !== 'string') return number;
   const countryCode = getCountryCode(country) ?? '+';
   let cleaned = number.replace(/[^\d+]/g, '');
@@ -215,82 +215,78 @@ function normalizePhoneNumber(number, country){
   if (cleaned.startsWith('+')) return cleaned;
   if (cleaned.startsWith('00')) return '+' + cleaned.slice(2);
   if (cleaned.startsWith('0')) return countryCode + cleaned.slice(1);
-  return '+'+countryCode + cleaned;
+  return '+' + countryCode + cleaned;
 }
 
-function getCountryCode(country){
-    let countryCode;
+function getCountryCode(country) {
+  let countryCode;
 
-    switch (country) {
-        case "Germany": countryCode = "49"; break;
-        case "France": countryCode = "33"; break;
-        case "Italy": countryCode = "39"; break;
-        case "Spain": countryCode = "34"; break;
-        case "Ukraine": countryCode = "380"; break;
-        case "United Kingdom": countryCode = "44"; break;
-        case "United States": countryCode = "1"; break;
-        case "Canada": countryCode = "1"; break;
-        case "Japan": countryCode = "81"; break;
-        case "South Korea": countryCode = "82"; break;
-        case "China": countryCode = "86"; break;
-        case "India": countryCode = "91"; break;
-        case "Australia": countryCode = "61"; break;
-        case "New Zealand": countryCode = "64"; break;
-        case "Brazil": countryCode = "55"; break;
-        case "Argentina": countryCode = "54"; break;
-        case "Mexico": countryCode = "52"; break;
-        case "South Africa": countryCode = "27"; break;
-        case "Egypt": countryCode = "20"; break;
-        case "Nigeria": countryCode = "234"; break;
-        case "Kenya": countryCode = "254"; break;
-        case "Turkey": countryCode = "90"; break;
-        case "Saudi Arabia": countryCode = "966"; break;
-        case "United Arab Emirates": countryCode = "971"; break;
-        case "Israel": countryCode = "972"; break;
-        case "Pakistan": countryCode = "92"; break;
-        case "Bangladesh": countryCode = "880"; break;
-        case "Indonesia": countryCode = "62"; break;
-        case "Thailand": countryCode = "66"; break;
-        case "Vietnam": countryCode = "84"; break;
-        case "Philippines": countryCode = "63"; break;
-        case "Malaysia": countryCode = "60"; break;
-        case "Singapore": countryCode = "65"; break;
-        case "Iran": countryCode = "98"; break;
-        case "Iraq": countryCode = "964"; break;
-        case "Greece": countryCode = "30"; break;
-        case "Netherlands": countryCode = "31"; break;
-        case "Belgium": countryCode = "32"; break;
-        case "Sweden": countryCode = "46"; break;
-        case "Norway": countryCode = "47"; break;
-        case "Denmark": countryCode = "45"; break;
-        case "Finland": countryCode = "358"; break;
-        case "Poland": countryCode = "48"; break;
-        case "Czech Republic": countryCode = "420"; break;
-        case "Hungary": countryCode = "36"; break;
-        case "Austria": countryCode = "43"; break;
-        case "Switzerland": countryCode = "41"; break;
-        case "Portugal": countryCode = "351"; break;
-        case "Ireland": countryCode = "353"; break;
-        case "Romania": countryCode = "40"; break;
-        default: countryCode = "380"; 
-    }
+  switch (country) {
+    case "Germany": countryCode = "49"; break;
+    case "France": countryCode = "33"; break;
+    case "Italy": countryCode = "39"; break;
+    case "Spain": countryCode = "34"; break;
+    case "Ukraine": countryCode = "380"; break;
+    case "United Kingdom": countryCode = "44"; break;
+    case "United States": countryCode = "1"; break;
+    case "Canada": countryCode = "1"; break;
+    case "Japan": countryCode = "81"; break;
+    case "South Korea": countryCode = "82"; break;
+    case "China": countryCode = "86"; break;
+    case "India": countryCode = "91"; break;
+    case "Australia": countryCode = "61"; break;
+    case "New Zealand": countryCode = "64"; break;
+    case "Brazil": countryCode = "55"; break;
+    case "Argentina": countryCode = "54"; break;
+    case "Mexico": countryCode = "52"; break;
+    case "South Africa": countryCode = "27"; break;
+    case "Egypt": countryCode = "20"; break;
+    case "Nigeria": countryCode = "234"; break;
+    case "Kenya": countryCode = "254"; break;
+    case "Turkey": countryCode = "90"; break;
+    case "Saudi Arabia": countryCode = "966"; break;
+    case "United Arab Emirates": countryCode = "971"; break;
+    case "Israel": countryCode = "972"; break;
+    case "Pakistan": countryCode = "92"; break;
+    case "Bangladesh": countryCode = "880"; break;
+    case "Indonesia": countryCode = "62"; break;
+    case "Thailand": countryCode = "66"; break;
+    case "Vietnam": countryCode = "84"; break;
+    case "Philippines": countryCode = "63"; break;
+    case "Malaysia": countryCode = "60"; break;
+    case "Singapore": countryCode = "65"; break;
+    case "Iran": countryCode = "98"; break;
+    case "Iraq": countryCode = "964"; break;
+    case "Greece": countryCode = "30"; break;
+    case "Netherlands": countryCode = "31"; break;
+    case "Belgium": countryCode = "32"; break;
+    case "Sweden": countryCode = "46"; break;
+    case "Norway": countryCode = "47"; break;
+    case "Denmark": countryCode = "45"; break;
+    case "Finland": countryCode = "358"; break;
+    case "Poland": countryCode = "48"; break;
+    case "Czech Republic": countryCode = "420"; break;
+    case "Hungary": countryCode = "36"; break;
+    case "Austria": countryCode = "43"; break;
+    case "Switzerland": countryCode = "41"; break;
+    case "Portugal": countryCode = "351"; break;
+    case "Ireland": countryCode = "353"; break;
+    case "Romania": countryCode = "40"; break;
+    default: countryCode = "380";
+  }
 
-    return countryCode;
+  return countryCode;
 }
 
 //exercise 3
 
-function filterArray(usersArray, filters) {
+export function filterArray(usersArray, filters) {
   return [...usersArray].filter(user => {
     const genderMatch =
-      filters.gender !== null && filters.gender !== undefined
-        ? user.gender === filters.gender
-        : true;
+      filters.gender != null ? user.gender === filters.gender : true;
 
     const favoriteMatch =
-      filters.favorite !== null && filters.favorite !== undefined
-        ? user.favorite === filters.favorite
-        : true;
+      filters.favorite === true ? user.favorite === true : true;
 
     const countryMatch =
       Array.isArray(filters.country) && filters.country.length > 0
@@ -302,24 +298,36 @@ function filterArray(usersArray, filters) {
         ? user.age >= filters.ageRange[0] && user.age <= filters.ageRange[1]
         : true;
 
-    return genderMatch && favoriteMatch && countryMatch && ageMatch;
+    const hasPhotoMatch =
+      filters.hasPhoto === true ? user.picture_large?.trim() !== "" : true;
+
+    return genderMatch && favoriteMatch && countryMatch && ageMatch && hasPhotoMatch;
   });
 }
 
 //exercise 4
 
-function sortArray(usersArray, key, order){     //order = asc or des
-    let comparator;
-    if(typeof(usersArray[0][key]) === "number"){
-        comparator = order === "asc"?
-      (a,b) => a[key]-b[key] : 
-      (a,b) => b[key]-a[key];
-    } else{
-        comparator = order === "asc"?
-      (a,b) => a[key].localeCompare(b[key]) : 
-      (a,b) => b[key].localeCompare(a[key]);
+export function sortArray(usersArray, key, order = "asc") {
+  return [...usersArray].sort((a, b) => {
+    const valA = a[key];
+    const valB = b[key];
+
+    const direction = order === "asc" ? 1 : -1;
+
+    if (valA == null && valB == null) return 0;
+    if (valA == null) return 1 * direction;
+    if (valB == null) return -1 * direction;
+
+    if (typeof valA === "number" && typeof valB === "number") {
+      return (valA - valB) * direction;
     }
-    return [...usersArray].sort(comparator);
+
+    if (valA instanceof Date && valB instanceof Date) {
+      return (valA.getTime() - valB.getTime()) * direction;
+    }
+
+    return valA.toString().localeCompare(valB.toString(), undefined, { sensitivity: 'base' }) * direction;
+  });
 }
 
 //exercise 5
@@ -339,7 +347,7 @@ function findInArray(usersArray, search) {
       }
 
       else if (typeof value === "string") {
-        const words = value.toLowerCase().split(/\s+/); 
+        const words = value.toLowerCase().split(/\s+/);
         for (let word of words) {
           if (searchTerms.includes(word)) {
             return true;

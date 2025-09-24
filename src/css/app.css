@@ -353,11 +353,15 @@ table {
         &:hover {
             cursor: pointer;
             background-color: var(--table-secondary-color);
+        }
 
-            &::after {
+        &[data-order="asc"]:hover::after {
                 content: '▲';
-                color: var(--table-navigation)
+                color: var(--table-navigation);
             }
+        &[data-order="desc"]:hover::after {
+                content: '▼';
+                color: var(--table-navigation);
         }
     }
 
@@ -529,7 +533,7 @@ dialog {
         }
     }
 
-    &.teacher-info {
+    &#teacher-info {
         height: calc(100vh - 50%);
         top: 25%;
 
@@ -577,6 +581,10 @@ dialog {
             margin: 1rem;
         }
     }
+}
+
+.teacher-card{
+    cursor: pointer;
 }
 
 

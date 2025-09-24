@@ -43,87 +43,59 @@
          <h1>Top Teachers</h1>
          <ul id="filters">
             <li class="select">
-               <label for="">Age</label>
-               <select name="" id="">
-                  <option>18-31</option>
+               <label for="age">Age</label>
+               <select name="age" id="age" class="filter">
+                  <option value="18-25">18–25</option>
+                  <option value="26-31">26–31</option>
+                  <option value="32-40">32–40</option>
+                  <option value="41-55">41–55</option>
+                  <option value="56-75">56-75</option>
                </select>
             </li>
+
             <li class="select">
-               <label for="">Region</label>
-               <select name="" id="">
-                  <option>Europe</option>
+               <label for="country">Country</label>
+               <select name="country" id="country" class="filter">
+                  <option value="Australia">Australia</option>
+                  <option value="Canada">Canada</option>
+                  <option value="Denmark">Denmark</option>
+                  <option value="Finland">Finland</option>
+                  <option value="France">France</option>
+                  <option value="Germany">Germany</option>
+                  <option value="Iran">Iran</option>
+                  <option value="Ireland">Ireland</option>
+                  <option value="Netherlands">Netherlands</option>
+                  <option value="New Zealand">New Zealand</option>
+                  <option value="Norway">Norway</option>
+                  <option value="Poland">Poland</option>
+                  <option value="Spain">Spain</option>
+                  <option value="Switzerland">Switzerland</option>
+                  <option value="Turkey">Turkey</option>
+                  <option value="Ukraine">Ukraine</option>
+                  <option value="United States">United States</option>
                </select>
             </li>
+
             <li class="select">
-               <label for="">Sex</label>
-               <select name="" id="">
-                  <option>Male</option>
-                  <option>Female</option>
+               <label for="sex">Sex</label>
+               <select name="sex" id="sex" class="filter">
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
                </select>
             </li>
+
             <li class="checkbox photo">
-               <input type="checkbox">
+               <input type="checkbox" id="photo" class="filter" checked>
                <label for="photo"></label>
-               <!-- Only with photo -->
             </li>
+
             <li class="checkbox">
-               <input type="checkbox">
+               <input type="checkbox" id="favorites" class="filter" checked>
                <label for="favorites"></label>
-               <!-- Only Favorites -->
             </li>
          </ul>
          <div class="teachers-list">
-            <ul id="teachers-grid">
-               <li style="position: relative">
-                  <span id="star" class="favorite"></span>
-                  <img src="images/man2.png" alt="teacher"></img>
-                  <h2 class="teacher-name">Ihor Tkachuk</h2>
-                  <p class="teacher-speciality">Math</p>
-                  <p class="teacher-origin">Ukraine</p>
-               </li>
-               <li>
-                  <img src="images/man3.png" alt="teacher">
-                  <h2 class="teacher-name">Pragg Rameshbabu</h2>
-                  <p class="teacher-speciality">Chess</p>
-                  <p class="teacher-origin">India</p>
-               </li>
-               <li>
-                  <img src="images/woman2.png" alt="teacher">
-                  <h2 class="teacher-name">Floor Jansen</h2>
-                  <p class="teacher-speciality">Vocal</p>
-                  <p class="teacher-origin">Denmark</p>
-               </li>
-               <li>
-                  <img src="images/man1.png" alt="teacher">
-                  <h2 class="teacher-name">John Burke</h2>
-                  <p class="teacher-speciality">Computer Science</p>
-                  <p class="teacher-origin">Belgium</p>
-               </li>
-               <li>
-                  <img src="images/woman1.png" alt="teacher">
-                  <h2 class="teacher-name">Ari Tang</h2>
-                  <p class="teacher-speciality">Biology</p>
-                  <p class="teacher-origin">China</p>
-               </li>
-               <li>
-                  <img src="images/woman3.png" alt="teacher">
-                  <h2 class="teacher-name">Rachel Andrew</h2>
-                  <p class="teacher-speciality">Medicine</p>
-                  <p class="teacher-origin">UK</p>
-               </li>
-               <li>
-                  <div data-initials="A.M" data-has-photo="false"></div>
-                  <h2 class="teacher-name">Anna Muzychuk</h2>
-                  <p class="teacher-speciality">Chess</p>
-                  <p class="teacher-origin">Belarus</p>
-               </li>
-               <li>
-                  <div data-initials="R.L" data-has-photo="false"></div>
-                  <h2 class="teacher-name">Radoslaw Ljuboevic</h2>
-                  <p class="teacher-speciality">Physics</p>
-                  <p class="teacher-origin">Poland</p>
-               </li>
-            </ul>
+            <ul id="teachers-grid"></ul>
          </div>
       </section>
       <hr>
@@ -132,15 +104,14 @@
          <table>
             <thead>
                <tr>
-                  <th id="name-table">Name</th>
-                  <th id="speciality-table">Speciality</th>
-                  <th id="age-table">Age</th>
-                  <th id="gender-table">Gender</th>
-                  <th id="country-table">Country</th>
+                  <th id="full_name" class="sort" data-order="asc">Name</th>
+                  <th id="course" class="sort" data-order="asc">Speciality</th>
+                  <th id="age" class="sort" data-order="asc">Age</th>
+                  <th id="b_date" class="sort" data-order="asc">Birthday</th>
+                  <th id="country" class="sort" data-order="asc">Country</th>
                </tr>
             </thead>
             <tbody>
-               
             </tbody>
          </table>
          <div>
@@ -255,20 +226,20 @@
             </div>
 
             <div class="input-container row">
-               <label for="teacher-sex" class="margin-right">Sex</label>
-               <label for="Male">Male</label>
-               <input type="radio" name="teacher-sex" id="Male" value="Male" required>
-               <label for="Female">Female</label>
-               <input type="radio" name="teacher-sex" id="Female" value="Female" required>
+               <label class="margin-right">Sex</label>
+               <label for="male" >Male</label>
+               <input value="male" type="radio" name="teacher-sex" id="male" required>
+               <label for="female">Female</label>
+               <input value="female" type="radio" name="teacher-sex" id="female" required>
             </div>
 
             <div class="input-container row invisible">
                <label for="teacher-sex-hidden">Sex</label>
                <label for="Male-hidden" class="sex">Male
-                  <input type="radio" name="teacher-sex-hidden" id="Male-hidden" value="Male" required>
+                  <input type="radio" name="teacher-sex-hidden" id="Male-hidden" value="Male">
                </label>
                <label for="Female-hidden" class="sex">Female
-                  <input type="radio" name="teacher-sex-hidden" id="Female-hidden" value="Female" required>
+                  <input type="radio" name="teacher-sex-hidden" id="Female-hidden" value="Female">
                </label>
             </div>
 
@@ -279,7 +250,7 @@
 
             <div class="input-container row invisible">
                <label for="teacher-color-hidden">Background color</label>
-               <input type="color" name="teacher-color-hidden" id="teacher-color-hidden" required>
+               <input type="color" name="teacher-color-hidden" id="teacher-color-hidden">
             </div>
          </div>
 
@@ -288,14 +259,14 @@
             <textarea name="teacher-notes" id="teacher-notes" rows="10"></textarea>
          </div>
 
-         <button id="add-teacher" type="submit">Add</button>
+         <button id="add-teacher" type="button">Add</button>
       </form>
    </dialog>
 
-   <dialog class="teacher-info">
+   <dialog id="teacher-info">
       <div class="dialog-panel">
          <h2>Teacher info</h2>
-         <button class="close-dialog">x</button>
+         <button class="close-card">x</button>
       </div>
       <div class="flex">
          <img src="images/man2.png" alt="teacher">
