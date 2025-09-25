@@ -12,7 +12,8 @@
 
    <link rel="stylesheet" href="./css/app.css">
    <script type="module" src="./js/app.js" defer></script>
-   <script type="module" src="./js/script.js" defer></script>
+   <!-- <script type="module" src="./js/script.js" defer></script> -->
+   <script type="module" src="./js/lalala.js" defer></script>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
@@ -22,7 +23,7 @@
          <form>
             <div>
                <input id="search-input" type="text" placeholder="Name, note or age to search">
-               <button id="search-btn">Search</button>
+               <button id="search-btn" type="button">Search</button>
             </div>
          </form>
       </div>
@@ -37,7 +38,11 @@
       </nav>
    </header>
    <hr>
-
+   <div id="search-results" class="hidden">
+      <h1>Search results</h1>
+      <ul id="search-results-grid"></ul>
+      <button id="exit-search-btn">Exit search</button>
+   </div>
    <main>
       <section class="top-teachers">
          <h1>Top Teachers</h1>
@@ -222,7 +227,7 @@
 
             <div class="input-container invisible">
                <label for="teacher-birth-hidden">Date of birth</label>
-               <input type="date" name="teacher-birth-hidden" id="teacher-birth-hidden" required>
+               <input type="date" name="teacher-birth-hidden" id="teacher-birth-hidden">
             </div>
 
             <div class="input-container row">
@@ -283,7 +288,7 @@
       <div class="bottom-info">
          <p class="teacher-notes align-left">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.
          </p>
-         <a href="#" class="blue dotted-underline align-left">toggle map</a>
+         <p class="teacher-favorite align-left" data-favorite="true"></p>
       </div>
 
    </dialog>

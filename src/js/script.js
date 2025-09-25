@@ -1,4 +1,4 @@
-import { userList, filterArray, sortArray, generateId } from "./app.js";
+import { userList, filterArray, sortArray, generateId, findInArray } from "./app.js";
 
 let tablePage = 1;
 let key = null;
@@ -24,9 +24,13 @@ function initListener() {
     const dialog = document.querySelector("#add-teacher-dialog");
     const teacherCard = document.querySelector("#teacher-info");
 
+    const main = document.querySelector("main");
+    const searchResults = document.querySelector("#search-results");
+    const searchResultsGrid = document.querySelector("#search-results-grid"); 
+
     body.addEventListener('click', (event) => {
         let target = event.target;
-        console.log(target.classList);
+        
         if (target.getAttribute('class') === 'add-teacher' || target.getAttribute('class') === 'close-dialog') {
             toggleAddTeacherDialog(dialog);
         }
@@ -45,104 +49,196 @@ function initListener() {
             key = target.getAttribute('id');
             order = target.getAttribute('data-order');
             target.setAttribute('data-order', order === "asc" ? "desc" : "asc");
-            console.log(key, order);
             loadTable();
         }
-        else if(target.classList.contains("teacher-card")) {
-            toggleTeacherDialog(teacherCard, target);
+        else if(target.classList.contains("teacher-card") || target.closest(".teacher-card")) {
+            const cardElement = target.closest(".teacher-card");
+            if (cardElement) {
+                toggleTeacherDialog(teacherCard, cardElement);
+            }
         }
         else if(target.classList.contains("close-card")) {
             toggleAddTeacherDialog(teacherCard);
         }
+        else if(target.id === "search-input") {
+            main.classList.add("hidden");
+            searchResults.classList.remove("hidden");
+        }
+        else if(target.id === "search-btn") {
+            searchTeachers(searchResultsGrid);
+        }
+        else if(target.classList.contains("teacher-favorite") || target.closest(".teacher-favorite")) {
+            const favoriteElement = target.closest(".teacher-favorite") || target;
+            toggleFavorite(favoriteElement);
+        }
+        else if(target.id === "exit-search-btn") {
+            searchResultsGrid.innerHTML = "";
+            searchResults.classList.add("hidden");
+            main.classList.remove("hidden");
+        }
+        else if(target.classList.contains("star")) {
+            toggleFavoriteStar(target);
+        }
     });
 }
 
+function toggleFavoriteStar(starElement) {
+    const teacherCard = starElement.closest(".teacher-card");
+    const teacherId = teacherCard.getAttribute("data-teacher-id");
 
-/*
-Завдання 1. 
-Відобразити масив об’єктів викладачів отриманий у
-лабораторній роботі №3 на html сторінці з лабораторної роботи №2 та
-реалізувати функціональність перегляду інформації про викладача та
-додавання у список вибраних (favorites).
-*/
-
-/*
-Завдання 2. (+)
-Додати на html сторінку можливість фільтрації викладачів на
-сторінці по країні, віку, статі та тих, що є у списку вибраних (country, age,
-gender, favorite.
-*/
-
-/*
-Завдання 3. (+)
-Додати на html сторінку до блоку статистики можливість
-сортування за ім’ям, спеціальністю, країною, та віком (full_name, course,
-age, b_day, country). Змінювати сортування по кліку на заголовок таблиці.
-*/
-
-
-/*
-Завдання 4 
-Додати на html сторінку функціональність пошуку по викладачах
-за параметрами: ім’я, коментар та вік (name, note, age)
-*/
-
-
-/*
-Завдання 5. 
-Реалізувати функціонал форми додавання викладача
-(teach_add_popup)
-*/
-
-function toggleTeacherDialog(teacherCard, target) {
-    teacherCard.toggleAttribute('open');
-
-    
+    const teacher = userList.find(t => t.id == teacherId);
+    if (teacher) {
+        teacher.favorite = !teacher.favorite;
+        starElement.setAttribute("data-favorite", teacher.favorite);
+        loadFavorites();
+        loadTopTeachers();
+    }
 }
 
+function searchTeachers(searchResultsGrid) {
+    const searchInput = document.querySelector("#search-input");
+
+    let searchedTeachers = findInArray(userList, searchInput.value);
+    console.log(searchedTeachers);
+
+    let html = "";
+    
+    for (let user of searchedTeachers) {
+        html += `<li class="teacher-card" data-teacher-id="${user.id}">`;
+        
+        html += `<span class="star" data-favorite="${user.favorite}"></span>`;
+        
+        if (user.picture_large) {
+            html += `<img src="${user.picture_large}" alt="${user.full_name}">`;
+        } else {
+            html += `<div class="teacher-avatar" data-initials="${getInitials(user.full_name)}"></div>`;
+        }
+        
+        html += `<h2 class="teacher-name">${user.full_name}</h2>`;
+        html += `<p class="teacher-speciality">${user.course}</p>`;
+        html += `<p class="teacher-origin">${user.country}</p>`;
+        html += `</li>`;
+    }
+    
+    searchResultsGrid.innerHTML = html;
+}
+
+function toggleFavorite(element) {
+    const dialog = document.getElementById('teacher-info');
+    const teacherId = dialog.getAttribute('data-teacher-id');
+    
+    if (!teacherId) return;
+    
+    const teacher = userList.find(t => t.id == teacherId);
+    if (teacher) {
+        teacher.favorite = !teacher.favorite;
+        
+        // Update the favorite button in the dialog
+        const favoriteButton = dialog.querySelector('.teacher-favorite');
+        favoriteButton.setAttribute('data-favorite', teacher.favorite);
+        favoriteButton.textContent = teacher.favorite ? "Remove from favorites" : "Add to favorites";
+        
+        // Update the star in the main grid if visible
+        const gridStar = document.querySelector(`.teacher-card[data-teacher-id="${teacherId}"] .star`);
+        if (gridStar) {
+            gridStar.setAttribute('data-favorite', teacher.favorite);
+        }
+        
+        // Update favorites carousel
+        loadFavorites();
+        loadTopTeachers();
+    }
+}
+
+function toggleTeacherDialog(teacherCard, target) {
+    const teacherId = target.getAttribute("data-teacher-id");
+    const teacher = userList.find(t => t.id == teacherId);
+    
+    if (teacher) {
+        populateTeacherDialog(teacherCard, teacher);
+        teacherCard.toggleAttribute('open');
+    }
+}
+
+function populateTeacherDialog(dialog, teacher) {
+    dialog.setAttribute('data-teacher-id', teacher.id);
+    
+    dialog.querySelector(".teacher-name").textContent = teacher.full_name;
+    dialog.querySelector(".teacher-speciality").textContent = teacher.course;
+    dialog.querySelector(".teacher-origin").textContent = `${teacher.city || ''}, ${teacher.country}`.trim();
+    dialog.querySelector(".teacher-age").textContent = `${teacher.age}, ${teacher.gender}`;
+    dialog.querySelector(".teacher-email").textContent = teacher.email;
+    dialog.querySelector(".teacher-phone").textContent = teacher.phone;
+    dialog.querySelector(".teacher-notes").textContent = teacher.note || "No notes available";
+    
+    const favoriteButton = dialog.querySelector('.teacher-favorite');
+    favoriteButton.setAttribute('data-favorite', teacher.favorite);
+    favoriteButton.textContent = teacher.favorite ? "Remove from favorites" : "Add to favorites";
+    favoriteButton.style.cursor = 'pointer';
+    favoriteButton.style.color = 'var(--secondary-color)';
+    
+    const img = dialog.querySelector("img");
+    if (teacher.picture_large) {
+        img.src = teacher.picture_large;
+        img.alt = teacher.full_name;
+    } else {
+        img.src = "images/default.jpg"; 
+        img.alt = "Teacher";
+    }
+}
 
 function toggleAddTeacherDialog(dialog) {
     dialog.toggleAttribute('open');
-
-    // for (let input of dialog.querySelectorAll('input')) {
-    //     input.value = '';
-    // }
+    
+    if (!dialog.open) {
+        const form = dialog.querySelector('form');
+        form.reset();
+    }
 }
 
 function getTeacherFormData(form) {
-  const data = {};
+    const data = {};
 
-  form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="color"]').forEach(input => {
-    if (!input.classList.contains("invisible")) {
-      data[input.name] = input.value;
-    }
-  });
+    form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="color"]').forEach(input => {
+        if (!input.classList.contains("invisible")) {
+            data[input.name] = input.value;
+        }
+    });
 
-  form.querySelectorAll('select').forEach(select => {
-    if (!select.classList.contains("invisible")) {
-      data[select.name] = select.value;
-    }
-  });
+    form.querySelectorAll('select').forEach(select => {
+        if (!select.classList.contains("invisible")) {
+            data[select.name] = select.value;
+        }
+    });
 
-  form.querySelectorAll('input[type="radio"]').forEach(radio => {
-    if (radio.checked && !radio.closest(".invisible")) {
-      data[radio.name] = radio.value;
-    }
-  });
+    form.querySelectorAll('input[type="radio"]').forEach(radio => {
+        if (radio.checked && !radio.closest(".invisible")) {
+            data[radio.name] = radio.value;
+        }
+    });
 
-  const notes = form.querySelector('textarea[name="teacher-notes"]');
-  data[notes.name] = notes.value;
+    const notes = form.querySelector('textarea[name="teacher-notes"]');
+    data[notes.name] = notes.value;
 
-  return data;
+    return data;
 }
 
 function addTeacher(dialog) {
-    let length = userList.length;
-    let inputData = getTeacherFormData(dialog.querySelector("form"));
-
-    teacher = {
-        gender: inputData["teacher-sex"],
-        title: teacher.gender==="male" ? "Mr." : "Ms.",
+    const form = dialog.querySelector("form");
+    
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const inputData = getTeacherFormData(form);
+    
+    const gender = inputData["teacher-sex"];
+    const title = gender === "male" ? "Mr." : "Ms.";
+    
+    const newTeacher = {
+        gender: gender,
+        title: title,
         full_name: inputData["teacher-name"],
         city: inputData["teacher-city"],
         state: null,
@@ -156,42 +252,42 @@ function addTeacher(dialog) {
         phone: inputData["teacher-phone"],
         picture_large: null,
         picture_thumbnail: null,
-
         id: generateId(),
         favorite: false,
         course: inputData["speciality"],
         bg_color: inputData["teacher-color"],
         note: inputData["teacher-notes"]
-    }
-    userList.push(teacher);
-    console.log(userList);
-    //TO DO: clear input
+    };
+    
+    userList.push(newTeacher);
+    
+    toggleAddTeacherDialog(dialog);
     loadData();
 }
 
-function calculateAge(inputElement) {
-  const dateString = inputElement; 
-  if (!dateString) return null;
-
-  const birthDate = new Date(dateString);
-  const ageMs = Date.now() - birthDate.getTime();
-  const ageDate = new Date(ageMs); 
-
-  return Math.abs(ageDate.getUTCFullYear() - 1970); 
+function calculateAge(birthDateString) {
+    if (!birthDateString) return null;
+    
+    const birthDate = new Date(birthDateString);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    
+    return age;
 }
 
-function convertDateInputToISO(inputElement) {
-  const dateString = inputElement; 
-  if (!dateString) return null;
-
-  const [year, month, day] = dateString.split('-').map(Number);
-  const dateObject = new Date(Date.UTC(year, month - 1, day)); 
-  return dateObject.toISOString(); 
+function convertDateInputToISO(dateString) {
+    if (!dateString) return null;
+    return new Date(dateString).toISOString();
 }
 
 function loadData() {
     loadTopTeachers();
-    loadTable();    //po 10
+    loadTable();
     loadFavorites();
 }
 
@@ -200,23 +296,14 @@ function loadTable() {
 
     let tbody = document.querySelector("tbody");
     let html = "";
-    for (let i = (tablePage - 1) * 10; i < tablePage * 10; i++) {
-        if (i >= sortedArray.length) {
-            html += '<tr class="hidden">';
-            html += `<td>lalala</td>`;
-            html += `<td>lalala</td>`;
-            html += `<td>lalala</td>`;
-            html += `<td>lalala</td>`;
-            html += `<td>lalala</td>`;
-            html += "</tr>";
-            break;
-        }
+    for (let i = (tablePage - 1) * 10; i < Math.min(tablePage * 10, sortedArray.length); i++) {
+        const teacher = sortedArray[i];
         html += "<tr>";
-        html += `<td>${sortedArray[i]["full_name"]}</td>`;
-        html += `<td>${sortedArray[i]["course"]}</td>`;
-        html += `<td>${sortedArray[i]["age"]}</td>`;
-        html += `<td>${formatDate(sortedArray[i]["b_date"])}</td>`;
-        html += `<td>${sortedArray[i]["country"]}</td>`;
+        html += `<td>${teacher.full_name}</td>`;
+        html += `<td>${teacher.course}</td>`;
+        html += `<td>${teacher.age}</td>`;
+        html += `<td>${formatDate(teacher.b_date)}</td>`;
+        html += `<td>${teacher.country}</td>`;
         html += "</tr>";
     }
     tbody.innerHTML = html;
@@ -225,48 +312,52 @@ function loadTable() {
 }
 
 function formatDate(date) {
+    if (!date) return "Unknown";
+    
     const d = new Date(date);
+    if (isNaN(d.getTime())) return "Invalid date";
+    
     const day = String(d.getDate()).padStart(2, "0");
     const month = String(d.getMonth() + 1).padStart(2, "0");
     const year = d.getFullYear();
     return `${day}.${month}.${year}`;
 }
 
-//add ...
 function loadTableNavigation() {
     let tableNavigation = document.querySelector("#table-navigation");
-    let navigationLength = userList.length / 10;
-    if (navigationLength % 10 != 0) navigationLength = parseInt(navigationLength) + 1;
+    let navigationLength = Math.ceil(userList.length / 10);
 
     let html = "";
     for (let i = 1; i <= navigationLength; i++) {
-        html += `<li class="page" data-page="${i}">${i}</li>`;
+        const activeClass = i == tablePage ? "active" : "";
+        html += `<li class="page ${activeClass}" data-page="${i}">${i}</li>`;
     }
     tableNavigation.innerHTML = html;
 }
 
+function getInitials(fullName) {
+    return fullName.split(' ').map(name => name[0]).join('').toUpperCase();
+}
+
 function loadFavorites() {
     let carousel = document.querySelector(".carousel.carousel--scroll-buttons");
-    let counter = 1;
+    let favoriteTeachers = userList.filter(teacher => teacher.favorite);
+    
     let html = "";
-    for (let user of userList) {
-        if (user["favorite"] === true) {
-            if (user["picture_large"] !== "") {
-                html += `<div class="carousel__slide teacher-card" data-label="Slide ${counter}">`;
-                html += `<img src="${user["picture_large"]}" alt="teacher">`;
-                html += `<h2 class="teacher-name">${user["full_name"]}</h2>`;
-                html += `<p class="teacher-origin">${user["country"]}</p>`;
-                html += `</div>`;
-            } else {
-                html += `<div class="carousel__slide teacher-card" data-label="Slide ${counter}">`;
-                html += `<div data-initials="${user["full_name"]}" data-has-photo="false"></div>`;  //add method with takes initials
-                html += `<h2 class="teacher-name">${user["full_name"]}</h2>`;
-                html += `<p class="teacher-origin">${user["country"]}</p>`;
-                html += `</div>`;
-            }
-            counter++;
+    favoriteTeachers.forEach((teacher, index) => {
+        html += `<div class="carousel__slide teacher-card" data-label="Slide ${index + 1}" data-teacher-id="${teacher.id}">`;
+        
+        if (teacher.picture_large) {
+            html += `<img src="${teacher.picture_large}" alt="${teacher.full_name}">`;
+        } else {
+            html += `<div class="teacher-avatar" data-initials="${getInitials(teacher.full_name)}"></div>`;
         }
-    }
+        
+        html += `<h2 class="teacher-name">${teacher.full_name}</h2>`;
+        html += `<p class="teacher-origin">${teacher.country}</p>`;
+        html += `</div>`;
+    });
+    
     carousel.innerHTML = html;
 }
 
@@ -280,36 +371,32 @@ function updateFilters() {
     filters.ageRange = ageValue.split("-").map(Number);
     filters.country = [countryValue];
     filters.gender = genderValue.toLowerCase();
-    filters.favorite = favoriteChecked ? true : null;
-    filters.hasPhoto = photoChecked ? true : null;
-
-    console.log(filters);
+    filters.favorite = favoriteChecked;
+    filters.hasPhoto = photoChecked;
 }
 
 function loadTopTeachers() {
     let filteredUsers = filterArray(userList, filters);
 
-    console.log(filteredUsers)
     let grid = document.querySelector("#teachers-grid");
     let html = "";
+    
     for (let user of filteredUsers) {
-        if (user["picture_large"] !== "") {
-            html += `<li class="teacher-card">`
-            if (user["favorite"] === true) html += `<span id="star" class="favorite"></span>`;
-            html += `<img src="${user["picture_large"]}" alt="teacher"></img>`;
-            html += `<h2 class="teacher-name">${user["full_name"]}</h2>`;
-            html += `<p class="teacher-speciality">${user["course"]}</p>`;
-            html += `<p class="teacher-origin">${user["country"]}</p>`;
-            html += `</li>`;
+        html += `<li class="teacher-card" data-teacher-id="${user.id}">`;
+    
+        html += `<span class="star" data-favorite="${user.favorite}"></span>`;
+        
+        if (user.picture_large) {
+            html += `<img src="${user.picture_large}" alt="${user.full_name}">`;
         } else {
-            html += `<li class="teacher-card">`
-            if (user["favorite"] === true) html += `<span id="star" class="favorite"></span>`;
-            html += `<div data-initials="${user["full_name"]}" data-has-photo="false"></div>`;  //add method with takes initials
-            html += `<h2 class="teacher-name">${user["full_name"]}</h2>`;
-            html += `<p class="teacher-speciality">${user["course"]}</p>`;
-            html += `<p class="teacher-origin">${user["country"]}</p>`;
-            html += `</li>`;
+            html += `<div class="teacher-avatar" data-initials="${getInitials(user.full_name)}"></div>`;
         }
+        
+        html += `<h2 class="teacher-name">${user.full_name}</h2>`;
+        html += `<p class="teacher-speciality">${user.course}</p>`;
+        html += `<p class="teacher-origin">${user.country}</p>`;
+        html += `</li>`;
     }
+    
     grid.innerHTML = html;
 }

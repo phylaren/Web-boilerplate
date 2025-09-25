@@ -178,7 +178,7 @@ nav {
         display: grid;
         grid-template-columns: repeat(auto-fit, 170px);
         gap: 1rem;
-        justify-content: center; 
+        justify-content: center;
 
         & li {
             display: flex;
@@ -356,12 +356,13 @@ table {
         }
 
         &[data-order="asc"]:hover::after {
-                content: '▲';
-                color: var(--table-navigation);
-            }
+            content: '▲';
+            color: var(--table-navigation);
+        }
+
         &[data-order="desc"]:hover::after {
-                content: '▼';
-                color: var(--table-navigation);
+            content: '▼';
+            color: var(--table-navigation);
         }
     }
 
@@ -383,10 +384,10 @@ ul#table-navigation {
 
     color: var(--table-navigation);
 
-    &>li.page{
+    &>li.page {
         cursor: pointer;
-        
-        &:hover{
+
+        &:hover {
             text-decoration: underline;
         }
     }
@@ -451,7 +452,8 @@ dialog {
             text-align: start;
         }
 
-        &>button.close-dialog {
+        &>button.close-dialog,
+        >button.close-card {
             padding: 0;
             color: white;
             background-color: transparent;
@@ -583,26 +585,135 @@ dialog {
     }
 }
 
-.teacher-card{
+.teacher-card {
     cursor: pointer;
 }
 
 
-span#star.favorite {
+span.star {
     position: absolute;
     top: calc(0% + 5%);
     right: calc(0% + 5%);
-}
-
-span#star.favorite::after {
-    content: "⭐";
     font-size: 2rem;
 }
 
-.hidden{
+span.star[data-favorite="true"]::after {
+    content: "⭐";
+}
+
+.hidden {
     visibility: hidden;
 }
 
+.teacher-favorite {
+    cursor: pointer;
+    color: var(--secondary-color);
+    margin-top: 10px;
+    padding: 5px 10px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.teacher-favorite:hover {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.star {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: gold;
+    z-index: 10;
+}
+
+.teacher-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ccc;
+    color: white;
+    font-weight: bold;
+    font-size: 24px;
+    margin: 0 auto;
+}
+
+.hidden {
+    display: none;
+}
+
+.teacher-card {
+    position: relative;
+}
+
+ul#search-results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 170px);
+    gap: 1rem;
+    justify-content: center;
+
+    & li {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    & img {
+        /* CHANGE LATER */
+        width: 10rem;
+        height: 10rem;
+        border-radius: 50%;
+        border: var(--secondary-color) solid 0.2em;
+        cursor: pointer;
+
+        &:hover {
+            border: var(--secondary-color-hover) solid 0.2em;
+        }
+    }
+
+    & div {
+        background-color: white;
+        width: 10rem;
+        height: 10rem;
+        border-radius: 50%;
+        border: var(--secondary-color) solid 0.2em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        background-position: center;
+        background-size: cover;
+
+        cursor: pointer;
+
+
+        &::after {
+            content: attr(data-initials);
+            font-size: larger;
+            font-weight: bold;
+            color: var(--secondary-color);
+            z-index: 100;
+            top: 50%;
+        }
+
+        &:hover {
+            border-color: var(--secondary-color-hover);
+
+            &::after {
+                color: var(--secondary-color-hover);
+            }
+        }
+    }
+}
 
 @media screen and (max-width: 1024px) {
     body {

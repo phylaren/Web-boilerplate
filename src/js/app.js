@@ -331,7 +331,7 @@ export function sortArray(usersArray, key, order = "asc") {
 }
 
 //exercise 5
-function findInArray(usersArray, search) {
+export function findInArray(usersArray, search) {
   const searchTerms = String(search).toLowerCase().split(" ");
 
   return usersArray.filter(user => {
