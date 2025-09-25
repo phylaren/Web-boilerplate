@@ -298,6 +298,16 @@ function loadTable() {
     let html = "";
     for (let i = (tablePage - 1) * 10; i < Math.min(tablePage * 10, sortedArray.length); i++) {
         const teacher = sortedArray[i];
+        if (i >= sortedArray.length) {
+            html += '<tr class="hidden">';
+            html += `<td>lalala</td>`;
+            html += `<td>lalala</td>`;
+            html += `<td>lalala</td>`;
+            html += `<td>lalala</td>`;
+            html += `<td>lalala</td>`;
+            html += "</tr>";
+            break;
+        }
         html += "<tr>";
         html += `<td>${teacher.full_name}</td>`;
         html += `<td>${teacher.course}</td>`;
@@ -329,8 +339,7 @@ function loadTableNavigation() {
 
     let html = "";
     for (let i = 1; i <= navigationLength; i++) {
-        const activeClass = i == tablePage ? "active" : "";
-        html += `<li class="page ${activeClass}" data-page="${i}">${i}</li>`;
+        html += `<li class="page" data-page="${i}">${i}</li>`;
     }
     tableNavigation.innerHTML = html;
 }

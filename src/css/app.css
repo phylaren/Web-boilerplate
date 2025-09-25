@@ -537,6 +537,7 @@ dialog {
 
     &#teacher-info {
         height: calc(100vh - 50%);
+        width: calc(100vw - 60%);
         top: 25%;
 
         & .flex {
