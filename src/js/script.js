@@ -4,6 +4,8 @@ let tablePage = 1;
 let key = null;
 let order = null;
 
+let userArray = [];
+
 const filters = {
     country: ["Australia"],
     ageRange: [18, 25],
@@ -14,10 +16,27 @@ const filters = {
 let teacher = {};
 
 addEventListener('DOMContentLoaded', () => {
-    console.log(userList);
+    
+    userArray = fetchData(50);
+    console.log(userArray);
+    //fetchData();
     loadData();
     initListener();
 });
+
+/*
+Завдання 1. Зробити запит за списком користувачів https://randomuser.me/api.
+Повертаючи 50 користувачів. 
+*/
+function fetchData(userNum) {
+    const users = [];
+    fetch(`https://randomuser.me/api/?results=${userNum}`)      //why when I tried to add per 1 user I had cors error?
+            .then(response => response.json())
+            .then(data => data.results.forEach(user => users.push(user)))
+            .catch(error => console.log(error));
+
+    return users;
+}
 
 function initListener() {
     const body = document.querySelector('body');
@@ -133,18 +152,15 @@ function toggleFavorite(element) {
     if (teacher) {
         teacher.favorite = !teacher.favorite;
         
-        // Update the favorite button in the dialog
         const favoriteButton = dialog.querySelector('.teacher-favorite');
         favoriteButton.setAttribute('data-favorite', teacher.favorite);
         favoriteButton.textContent = teacher.favorite ? "Remove from favorites" : "Add to favorites";
         
-        // Update the star in the main grid if visible
         const gridStar = document.querySelector(`.teacher-card[data-teacher-id="${teacherId}"] .star`);
         if (gridStar) {
             gridStar.setAttribute('data-favorite', teacher.favorite);
         }
         
-        // Update favorites carousel
         loadFavorites();
         loadTopTeachers();
     }
