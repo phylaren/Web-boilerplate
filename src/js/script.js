@@ -18,10 +18,7 @@ const filters = {
 addEventListener('DOMContentLoaded', async () => {
 
     userArray = await fetchData(50);
-    //console.log(userArray);
     userArray = formatArrays(userArray);
-    //userArray = formatUsers(userArray);
-    //console.log(userArray);
     loadData();
     initListener();
 });
@@ -45,28 +42,23 @@ function initListener() {
     const body = document.querySelector('body');
     const dialog = document.querySelector("#add-teacher-dialog");
     const teacherCard = document.querySelector("#teacher-info");
-
     const main = document.querySelector("main");
     const searchResults = document.querySelector("#search-results");
     const searchResultsGrid = document.querySelector("#search-results-grid");
 
-
-    /*
-        Завдання 5. 
-        Додати до package.json як devDependency пакет json-server. Та налаштувати так, щоб при сабміті форми, на нього відправлявся 
-        POST запит з провалідованними данними з форми 
-    */
-    const addTeacherForm = dialog.querySelector("form");
-    addTeacherForm.addEventListener('submit', (event) => {
-        event.preventDefault(); 
-        addTeacher(dialog);
-    });
-
     body.addEventListener('click', (event) => {
         let target = event.target;
 
+
+
         if (target.getAttribute('class') === 'add-teacher' || target.getAttribute('class') === 'close-dialog') {
             toggleAddTeacherDialog(dialog);
+        }
+        //ex 5
+        else if (target.id === "add-teacher-btn") {
+            event.preventDefault();
+            event.stopPropagation();
+            addTeacher(dialog);
         }
         else if (target.getAttribute('class') === "page") {
             tablePage = target.getAttribute('data-page');
@@ -96,6 +88,8 @@ function initListener() {
             searchResults.classList.remove("hidden");
         }
         else if (target.id === "search-btn") {
+            event.preventDefault();
+            event.stopPropagation();
             searchTeachers(searchResultsGrid);
         }
         else if (target.classList.contains("teacher-favorite") || target.closest(".teacher-favorite")) {
@@ -110,11 +104,7 @@ function initListener() {
         else if (target.classList.contains("star")) {
             toggleFavoriteStar(target);
         }
-
-        /*
-        Завдання 4. Додати пагінацію: робити запит на наступні 10 користувачів при
-        натиску на кнопку «далі» (додані користувачі відображаються на сторінці).
-        */
+        //ex 4
         else if (target.id === "load-more-btn") {
             loadMoreTeachers();
         }
@@ -264,13 +254,13 @@ function getTeacherFormData(form) {
 
     const notes = form.querySelector('textarea[name="teacher-notes"]');
     data[notes.name] = notes.value;
-    
+
     return data;
 }
 
 async function sendToServer(teacher) {
     try {
-        const response = await fetch('http://localhost:3001/submissions', {
+        const response = await fetch('http://192.168.0.104:8080/submissions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -285,15 +275,18 @@ async function sendToServer(teacher) {
         const result = await response.json();
         console.log('Teacher saved to server:', result);
         return result;
-        
+
     } catch (error) {
         console.error('Error sending teacher to server:', error);
-        alert('Could not save to server, but teacher was added locally. Make sure JSON server is running on port 3001.');
         return { success: false, error: error.message };
     }
 }
 
-function addTeacher(dialog) {
+function addTeacher(dialog, event) {
+    if (event) {
+        event.preventDefault();
+    }
+
     const form = dialog.querySelector("form");
     if (!form.checkValidity()) {
         form.reportValidity();
@@ -301,7 +294,6 @@ function addTeacher(dialog) {
     }
 
     const inputData = getTeacherFormData(form);
-
     const gender = inputData["teacher-sex"];
     const title = gender === "male" ? "Mr." : "Ms.";
 
@@ -328,10 +320,8 @@ function addTeacher(dialog) {
         note: inputData["teacher-notes"]
     };
 
-    
     userArray.push(newTeacher);
-    
-    
+
     sendToServer(newTeacher).then(() => {
         console.log('Teacher processing completed');
     }).catch(error => {
