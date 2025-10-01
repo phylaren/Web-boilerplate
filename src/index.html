@@ -20,12 +20,12 @@
    <header>
       <div class="search-panel">
          <h1 class="logo">Teachinder</h1>
-         <form>
+         <div class="form">
             <div>
                <input id="search-input" type="text" placeholder="Name, note or age to search">
                <button id="search-btn" type="button">Search</button>
             </div>
-         </form>
+         </div>
       </div>
       <nav>
          <ul>
@@ -101,6 +101,7 @@
          </ul>
          <div class="teachers-list">
             <ul id="teachers-grid"></ul>
+            <button id="load-more-btn">Load more</button>
          </div>
       </section>
       <hr>
@@ -264,7 +265,7 @@
             <textarea name="teacher-notes" id="teacher-notes" rows="10"></textarea>
          </div>
 
-         <button id="add-teacher" type="button">Add</button>
+         <button id="add-teacher-btn" type="submit">Add</button>
       </form>
    </dialog>
 
