@@ -1,5 +1,5 @@
 import { randomUserMock, additionalUsers } from './mock-data.js';
-export const userList = validateUsers(formatArrays(randomUserMock, additionalUsers));;
+export const userList = [];//validateUsers(formatArrays(randomUserMock, additionalUsers));;
 
 //addEventListener('DOMContentLoaded', () => {
 
@@ -34,16 +34,23 @@ export const userList = validateUsers(formatArrays(randomUserMock, additionalUse
 
 //});
 
-function formatArrays(...data) {
-  const allUsers = [];
 
-  data.forEach(array => {
-    for (let user of array) {
-      const formatted = formatUser(user);
-      allUsers.push(formatted);
-    }
-  });
 
+/*
+Завдання 2. Замінити сортування, фільтрацію, валідацію та пошук на роботу з
+данними із запиту. Оновити статистику на роботу з данними, що повертаються із
+запиту. Якщо кількість користувачів змінюється (фільтрація, пошук, додали
+нових), це відображається у статистиці.
+*/
+
+export function formatArrays(array) {
+  const allUsers = array.map(user => formatUser(user));
+  //allUsers.forEach(user => console.log(user));
+  // data.forEach(user => {
+  //     console.log(user);
+  //     const formatted = formatUser(user);
+  //     allUsers.push(formatted);
+  // });
   allUsers.forEach(user => user.phone = normalizePhoneNumber(user.phone, user.country));
   let mergedUsers = mergeDuplicates(allUsers);
   mergedUsers = validateUsers(mergedUsers);
@@ -51,7 +58,7 @@ function formatArrays(...data) {
 }
 
 
-function formatUser(user) {
+export function formatUser(user) {
   const getString = (val) => typeof val === "string" ? val : "";
   const getNumber = (val) => typeof val === "number" ? val : (isFinite(Number(val)) ? Number(val) : null);
   const getBoolean = (val) => typeof val === "boolean" ? val : getRandomBoolean();

@@ -62,7 +62,7 @@ header {
                 1.5px 1px 0 black;
         }
 
-        &>form {
+        &>.form {
 
             & div {
                 display: flex;
@@ -755,7 +755,7 @@ ul#search-results-grid {
         width: 100%;
         flex-direction: column;
 
-        &>form {
+        &>.form {
             width: 100%;
 
             &>div>* {
