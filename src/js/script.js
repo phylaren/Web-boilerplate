@@ -1,5 +1,13 @@
 import { userList, filterArray, sortArray, generateId, findInArray, formatArrays } from "./app.js";
 
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+import dayjs from "dayjs";
+
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
+
 
 let tablePage = 1;
 let key = null;
@@ -16,20 +24,17 @@ const filters = {
 };
 
 addEventListener('DOMContentLoaded', async () => {
-
     userArray = await fetchData(50);
     //console.log(userArray);
     userArray = formatArrays(userArray);
+    console.log(userArray);
     //userArray = formatUsers(userArray);
     //console.log(userArray);
     loadData();
     initListener();
 });
 
-/*
-Завдання 1. Зробити запит за списком користувачів https://randomuser.me/api.
-Повертаючи 50 користувачів. 
-*/
+
 async function fetchData(userNum) {
     try {
         const response = await fetch(`https://randomuser.me/api/?results=${userNum}`);
@@ -51,14 +56,17 @@ function initListener() {
     const searchResultsGrid = document.querySelector("#search-results-grid");
 
 
-    /*
-        Завдання 5. 
-        Додати до package.json як devDependency пакет json-server. Та налаштувати так, щоб при сабміті форми, на нього відправлявся 
-        POST запит з провалідованними данними з форми 
-    */
+    const map = L.map('map').setView([50.4501, 30.5234], 3);
+    map.scrollWheelZoom.disable();
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const mapContainer = map.getContainer();
+
     const addTeacherForm = dialog.querySelector("form");
     addTeacherForm.addEventListener('submit', (event) => {
-        event.preventDefault(); 
+        event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
         addTeacher(dialog);
@@ -87,7 +95,7 @@ function initListener() {
         else if (target.classList.contains("teacher-card") || target.closest(".teacher-card")) {
             const cardElement = target.closest(".teacher-card");
             if (cardElement) {
-                toggleTeacherDialog(teacherCard, cardElement);
+                toggleTeacherDialog(teacherCard, cardElement, map);
             }
         }
         else if (target.classList.contains("close-card")) {
@@ -112,11 +120,9 @@ function initListener() {
         else if (target.classList.contains("star")) {
             toggleFavoriteStar(target);
         }
-
-        /*
-        Завдання 4. Додати пагінацію: робити запит на наступні 10 користувачів при
-        натиску на кнопку «далі» (додані користувачі відображаються на сторінці).
-        */
+        else if (target.id === "toggle-map") {
+            mapContainer.classList.toggle("hidden");
+        }
         else if (target.id === "load-more-btn") {
             loadMoreTeachers();
         }
@@ -198,18 +204,22 @@ function toggleFavorite(element) {
     }
 }
 
-function toggleTeacherDialog(teacherCard, target) {
+function toggleTeacherDialog(teacherCard, target, map) {
     const teacherId = target.getAttribute("data-teacher-id");
     const teacher = userArray.find(t => t.id == teacherId);
+    map.getContainer().classList.add("hidden");
 
     if (teacher) {
-        populateTeacherDialog(teacherCard, teacher);
+        populateTeacherDialog(teacherCard, teacher, map);
         teacherCard.toggleAttribute('open');
     }
 }
 
-function populateTeacherDialog(dialog, teacher) {
+function populateTeacherDialog(dialog, teacher, map) {
     dialog.setAttribute('data-teacher-id', teacher.id);
+
+    const daysTillBDay = calculateDaysTillBDay(teacher);
+
 
     dialog.querySelector(".teacher-name").textContent = teacher.full_name;
     dialog.querySelector(".teacher-speciality").textContent = teacher.course;
@@ -218,6 +228,16 @@ function populateTeacherDialog(dialog, teacher) {
     dialog.querySelector(".teacher-email").textContent = teacher.email;
     dialog.querySelector(".teacher-phone").textContent = teacher.phone;
     dialog.querySelector(".teacher-notes").textContent = teacher.note || "No notes available";
+    dialog.querySelector(".teacher-birthday").textContent = `Next birthday in ${daysTillBDay} days`;
+
+
+    const coordinates = [];
+    coordinates.push(teacher.coordinates.latitude);
+    coordinates.push(teacher.coordinates.longitude);
+
+    map.setView(coordinates, 14);
+    L.marker(coordinates).addTo(map);
+    map.invalidateSize();
 
     const favoriteButton = dialog.querySelector('.teacher-favorite');
     favoriteButton.setAttribute('data-favorite', teacher.favorite);
@@ -233,6 +253,19 @@ function populateTeacherDialog(dialog, teacher) {
         img.src = "images/default.jpg";
         img.alt = "Teacher";
     }
+}
+
+function calculateDaysTillBDay(teacher) {
+    const today = dayjs();
+    const birthDate = dayjs(teacher.b_date);
+    let nextBirthday = birthDate.year(today.year());
+
+    if (nextBirthday.isBefore(today, 'day')) {
+        nextBirthday = nextBirthday.add(1, 'year');
+    }
+
+    const diffDays = nextBirthday.diff(today, 'day');
+    return diffDays;
 }
 
 function toggleAddTeacherDialog(dialog) {
@@ -266,7 +299,7 @@ function getTeacherFormData(form) {
 
     const notes = form.querySelector('textarea[name="teacher-notes"]');
     data[notes.name] = notes.value;
-    
+
     return data;
 }
 
@@ -287,7 +320,7 @@ async function sendToServer(teacher) {
         const result = await response.json();
         console.log('Teacher saved to server:', result);
         return result;
-        
+
     } catch (error) {
         console.error('Error sending teacher to server:', error);
         return { success: false, error: error.message };
@@ -329,10 +362,10 @@ function addTeacher(dialog) {
         note: inputData["teacher-notes"]
     };
 
-    
+
     userArray.push(newTeacher);
-    
-    
+
+
     sendToServer(newTeacher).then(() => {
         console.log('Teacher processing completed');
     }).catch(error => {

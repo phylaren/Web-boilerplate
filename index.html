@@ -17,6 +17,7 @@
 </head>
 <!-- npm run dev -->
 <!-- npx json-server --watch db.json --port 3000 -->
+
 <body itemscope itemtype="http://schema.org/WebPage">
    <header>
       <div class="search-panel">
@@ -234,7 +235,7 @@
 
             <div class="input-container row">
                <label class="margin-right">Sex</label>
-               <label for="male" >Male</label>
+               <label for="male">Male</label>
                <input value="male" type="radio" name="teacher-sex" id="male" required>
                <label for="female">Female</label>
                <input value="female" type="radio" name="teacher-sex" id="female" required>
@@ -284,17 +285,18 @@
             <p class="teacher-age">35, male</p>
             <p class="teacher-email blue">ihor_tka4@example.com</p>
             <p class="teacher-phone">+380661234567</p>
+            <p class="teacher-birthday">Next birthday in </p>
          </div>
+         <div id="map" class="hidden"></div>
       </div>
-
       <div class="bottom-info">
+         <p id="toggle-map" class="align-left blue">toggle map</p>
          <p class="teacher-notes align-left">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.
          </p>
          <p class="teacher-favorite align-left" data-favorite="true"></p>
       </div>
 
    </dialog>
-
 </body>
 
 </html>

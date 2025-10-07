@@ -536,8 +536,8 @@ dialog {
     }
 
     &#teacher-info {
-        height: calc(100vh - 50%);
-        width: calc(100vw - 60%);
+        height: 450px;
+        width: 600px;
         top: 25%;
 
         & .flex {
@@ -716,6 +716,18 @@ ul#search-results-grid {
     }
 }
 
+#map {
+    position: absolute;
+    width: 100%;
+    height: 60%;
+
+}
+
+#toggle-map {
+    text-decoration: dotted underline;
+    cursor: pointer;
+}
+
 @media screen and (max-width: 1024px) {
     body {
         margin: 0 0;
@@ -789,6 +801,10 @@ ul#search-results-grid {
         &::scroll-button(*) {
             display: none;
         }
+    }
+
+    #teacher-info{
+        width: 400px;
     }
 }
 
