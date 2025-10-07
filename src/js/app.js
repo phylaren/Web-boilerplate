@@ -1,4 +1,5 @@
 import { randomUserMock, additionalUsers } from './mock-data.js';
+import _ from 'lodash';
 export const userList = [];//validateUsers(formatArrays(randomUserMock, additionalUsers));;
 
 //addEventListener('DOMContentLoaded', () => {
@@ -42,18 +43,16 @@ export const userList = [];//validateUsers(formatArrays(randomUserMock, addition
 запиту. Якщо кількість користувачів змінюється (фільтрація, пошук, додали
 нових), це відображається у статистиці.
 */
-
 export function formatArrays(array) {
-  const allUsers = array.map(user => formatUser(user));
-  //allUsers.forEach(user => console.log(user));
-  // data.forEach(user => {
-  //     console.log(user);
-  //     const formatted = formatUser(user);
-  //     allUsers.push(formatted);
-  // });
-  allUsers.forEach(user => user.phone = normalizePhoneNumber(user.phone, user.country));
+  const allUsers = _.map(array, formatUser);
+
+  _.forEach(allUsers, user => {
+    user.phone = normalizePhoneNumber(user.phone, user.country);
+  });
+
   let mergedUsers = mergeDuplicates(allUsers);
   mergedUsers = validateUsers(mergedUsers);
+
   return mergedUsers;
 }
 
@@ -90,22 +89,15 @@ export function formatUser(user) {
 }
 
 function mergeDuplicates(users) {
-  const merged = {};
-
-  users.forEach(user => {
-    const key = `${user.id}_${user.full_name}`;
-    if (!merged[key]) {
-      merged[key] = user;
-    } else {
-      let userObj = merged[key];
-      for (let field in user) {
-        if (userObj[field] === undefined || userObj[field] === null) {
-          userObj[field] = user[field];
-        }
-      }
-    }
+  const grouped = _.groupBy(users, user => `${user.id}_${user.full_name}`);
+  
+  return _.map(grouped, group => {
+    return _.reduce(group, (merged, user) => {
+      return _.mapValues(user, (val, key) => {
+        return merged[key] ?? val;
+      });
+    });
   });
-  return Object.values(merged);
 }
 
 function showFormattedArray(userList) {
@@ -160,24 +152,19 @@ function getRandomInt(min, max) {
 
 
 */
-
-function validateUsers(array) {
-  return [...array].filter(user => validateUser(user));
+export function validateUsers(array) {
+  return _.filter(array, validateUser);
 }
-function validateUser(user) {
-  // if (!isCorrectFullName(user.full_name)) console.log("Invalid name:", user.full_name);
-  // if (!isSentenseCase(user.city)) console.log("Invalid city:", user.city);
-  // if (!isSentenseCase(user.country)) console.log("Invalid country:", user.country);
-  // if (!isCorrectNote(user.note)) console.log("Invalid note:", user.note);
-  // if (!Number.isInteger(user.age)) console.log("Invalid age:", user.age);
-  // if (!isCorrectEmail(user.email)) console.log("Invalid email:", user.email);
 
-  return isCorrectFullName(user.full_name) &&
-    isSentenseCase(user.city) &&
-    isSentenseCase(user.country) &&
-    isCorrectNote(user.note) &&
-    Number.isInteger(user.age) &&
-    isCorrectEmail(user.email);
+function validateUser(user) {
+  return _.conforms({
+    full_name: isCorrectFullName,
+    city: isSentenseCase,
+    country: isSentenseCase,
+    note: isCorrectNote,
+    age: _.isInteger,
+    email: isCorrectEmail
+  })(user);
 }
 
 function isCorrectFullName(fullName) {
@@ -288,25 +275,26 @@ function getCountryCode(country) {
 //exercise 3
 
 export function filterArray(usersArray, filters) {
-  return [...usersArray].filter(user => {
-    const genderMatch =
-      filters.gender != null ? user.gender === filters.gender : true;
+  return _.filter(usersArray, user => {
+    const genderMatch = !_.isNil(filters.gender)
+      ? user.gender === filters.gender
+      : true;
 
-    const favoriteMatch =
-      filters.favorite === true ? user.favorite === true : true;
+    const favoriteMatch = filters.favorite === true
+      ? user.favorite === true
+      : true;
 
-    const countryMatch =
-      Array.isArray(filters.country) && filters.country.length > 0
-        ? filters.country.includes(user.country)
-        : true;
+    const countryMatch = _.isArray(filters.country) && !_.isEmpty(filters.country)
+      ? _.includes(filters.country, user.country)
+      : true;
 
-    const ageMatch =
-      Array.isArray(filters.ageRange) && filters.ageRange.length === 2
-        ? user.age >= filters.ageRange[0] && user.age <= filters.ageRange[1]
-        : true;
+    const ageMatch = _.isArray(filters.ageRange) && filters.ageRange.length === 2
+      ? _.inRange(user.age, filters.ageRange[0], filters.ageRange[1] + 1)
+      : true;
 
-    const hasPhotoMatch =
-      filters.hasPhoto === true ? user.picture_large?.trim() !== "" : true;
+    const hasPhotoMatch = filters.hasPhoto === true
+      ? !_.isEmpty(_.trim(user.picture_large))
+      : true;
 
     return genderMatch && favoriteMatch && countryMatch && ageMatch && hasPhotoMatch;
   });
@@ -314,73 +302,50 @@ export function filterArray(usersArray, filters) {
 
 //exercise 4
 
-export function sortArray(usersArray, key, order = "asc") {
-  return [...usersArray].sort((a, b) => {
-    const valA = a[key];
-    const valB = b[key];
+export function sortArray(usersArray, key, order = 'asc') {
+  return _.orderBy(usersArray, [user => {
+    const value = user[key];
 
-    const direction = order === "asc" ? 1 : -1;
+    if (_.isNil(value)) return order === 'asc' ? Infinity : -Infinity;
 
-    if (valA == null && valB == null) return 0;
-    if (valA == null) return 1 * direction;
-    if (valB == null) return -1 * direction;
+    if (_.isDate(value)) return value.getTime();
 
-    if (typeof valA === "number" && typeof valB === "number") {
-      return (valA - valB) * direction;
-    }
-
-    if (valA instanceof Date && valB instanceof Date) {
-      return (valA.getTime() - valB.getTime()) * direction;
-    }
-
-    return valA.toString().localeCompare(valB.toString(), undefined, { sensitivity: 'base' }) * direction;
-  });
+    return typeof value === 'number' ? value : value.toString().toLowerCase();
+  }], [order]);
 }
 
 //exercise 5
 export function findInArray(usersArray, search) {
-  const searchTerms = String(search).toLowerCase().split(" ");
+  const searchTerms = String(search).toLowerCase().split(/\s+/);
 
   return usersArray.filter(user => {
-    for (let key in user) {
-      let value = user[key];
+    return _.some(user, value => {
+      if (_.isBoolean(value) || _.isNil(value)) return false;
 
-      if (typeof value === "boolean" || value == null) continue;
-
-      if (typeof value === "number") {
-        if (searchTerms.includes(String(value))) {
-          return true;
-        }
+      if (_.isNumber(value)) {
+        return searchTerms.includes(String(value));
       }
 
-      else if (typeof value === "string") {
+      if (_.isString(value)) {
         const words = value.toLowerCase().split(/\s+/);
-        for (let word of words) {
-          if (searchTerms.includes(word)) {
-            return true;
+        return _.some(words, word => searchTerms.includes(word));
+      }
+
+      if (_.isArray(value)) {
+        return _.some(value, item => {
+          if (_.isString(item) || _.isNumber(item)) {
+            return searchTerms.includes(String(item).toLowerCase());
           }
-        }
+          return false;
+        });
       }
 
-      else if (Array.isArray(value)) {
-        for (let item of value) {
-          if (typeof item === "string" || typeof item === "number") {
-            if (searchTerms.includes(String(item).toLowerCase())) {
-              return true;
-            }
-          }
-        }
+      if (_.isPlainObject(value)) {
+        return findInArray([value], search).length > 0;
       }
 
-      else if (typeof value === "object") {
-        const nestedMatch = findInArray([value], search);
-        if (nestedMatch.length > 0) {
-          return true;
-        }
-      }
-    }
-
-    return false;
+      return false;
+    });
   });
 }
 

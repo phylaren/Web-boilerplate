@@ -54,7 +54,7 @@ function initListener() {
     const main = document.querySelector("main");
     const searchResults = document.querySelector("#search-results");
     const searchResultsGrid = document.querySelector("#search-results-grid");
-
+    const searchInput = document.querySelector("#search-input");
 
     const map = L.map('map').setView([50.4501, 30.5234], 3);
     map.scrollWheelZoom.disable();
@@ -106,6 +106,8 @@ function initListener() {
             searchResults.classList.remove("hidden");
         }
         else if (target.id === "search-btn") {
+            main.classList.add("hidden");
+            searchResults.classList.remove("hidden");
             searchTeachers(searchResultsGrid);
         }
         else if (target.classList.contains("teacher-favorite") || target.closest(".teacher-favorite")) {
@@ -115,6 +117,7 @@ function initListener() {
         else if (target.id === "exit-search-btn") {
             searchResultsGrid.innerHTML = "";
             searchResults.classList.add("hidden");
+            searchInput.value = "";
             main.classList.remove("hidden");
         }
         else if (target.classList.contains("star")) {
