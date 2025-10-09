@@ -6,12 +6,16 @@ import 'leaflet/dist/leaflet.css';
 import dayjs from "dayjs";
 
 import { Chart, registerables } from 'chart.js';
+import { get, update } from "lodash";
 Chart.register(...registerables);
 
 
 let tablePage = 1;
 let key = null;
 let order = null;
+let chart = null;
+let usersTable = null;
+let countriesTable = null;
 
 let userArray = [];
 
@@ -27,7 +31,6 @@ addEventListener('DOMContentLoaded', async () => {
     userArray = await fetchData(50);
     //console.log(userArray);
     userArray = formatArrays(userArray);
-    console.log(userArray);
     //userArray = formatUsers(userArray);
     //console.log(userArray);
     loadData();
@@ -56,10 +59,11 @@ function initListener() {
     const searchResultsGrid = document.querySelector("#search-results-grid");
     const searchInput = document.querySelector("#search-input");
 
-    const map = L.map('map').setView([50.4501, 30.5234], 3);
-    map.scrollWheelZoom.disable();
+    const map = L.map('map').setView([50.4501, 30.5234], 19);
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
 
     const mapContainer = map.getContainer();
@@ -81,10 +85,6 @@ function initListener() {
         else if (target.getAttribute('class') === "page") {
             tablePage = target.getAttribute('data-page');
             loadTable();
-        }
-        else if (target.classList.contains("filter")) {
-            updateFilters();
-            loadTopTeachers();
         }
         else if (target.classList.contains("sort")) {
             key = target.getAttribute('id');
@@ -125,12 +125,303 @@ function initListener() {
         }
         else if (target.id === "toggle-map") {
             mapContainer.classList.toggle("hidden");
+            if (!mapContainer.classList.contains("hidden")) {
+                map.invalidateSize();
+            }
         }
         else if (target.id === "load-more-btn") {
             loadMoreTeachers();
         }
+        else if (target.id === "table-view" || target.id === "chart-view" || target.id === "wdr-countries-view" || target.id === "wdr-users-view" && !target.classList.contains("active")) {
+            clearViewSection(view);
+            changeView(target.id);
+        }
+    });
+
+    body.addEventListener('change', (event) => {
+        let target = event.target;
+
+        if (target.classList.contains("filter")) {
+            updateFilters();
+            loadTopTeachers();
+        } else if (target.id === "category-select") {
+            updateChart();
+        }
     });
 }
+
+function changeView(id) {
+    const viewList = document.querySelector("#statistics-view");
+    for (let child of viewList.children) {
+        child.classList.remove("active");
+    }
+    const view = document.querySelector("#view");
+
+    switch (id) {
+        case "table-view":
+            viewList.children[0].classList.add("active");
+            toTableView(view);
+            break;
+        case "chart-view":
+            viewList.children[1].classList.add("active");
+            toChartView(view);
+            break;
+        case "wdr-countries-view":
+            viewList.children[2].classList.add("active");
+            toWdrCountriesView(view);
+            break;
+        case "wdr-users-view":
+            viewList.children[3].classList.add("active");
+            toWdrUsersView(view);
+            break;
+    }
+
+}
+
+function clearViewSection(view) {
+    view.innerHTML = "";
+}
+
+function toTableView(view) {
+    view.innerHTML = `
+            <table>
+               <thead>
+                  <tr>
+                     <th id="full_name" class="sort" data-order="asc">Name</th>
+                     <th id="course" class="sort" data-order="asc">Speciality</th>
+                     <th id="age" class="sort" data-order="asc">Age</th>
+                     <th id="b_date" class="sort" data-order="asc">Birthday</th>
+                     <th id="country" class="sort" data-order="asc">Country</th>
+                  </tr>
+               </thead>
+               <tbody>
+               </tbody>
+            </table>
+            <div>
+               <ul id="table-navigation"></ul>
+            </div>
+            `;
+
+    loadTable();
+}
+
+function toChartView(view) {
+    view.innerHTML = `
+        <div class="chart-container">
+            <canvas id="chart"></canvas>
+            <select id="category-select">
+                <option value="country">Country</option>
+                <option value="age">Age</option>
+                <option value="course">Speciality</option>
+                <option value="gender">Gender</option>
+                <option value="favorite">Favorites</option>
+            </select>
+        </div>
+    `;
+
+    const data = generateData();
+
+    const options = {
+        responsive: false,
+        plugins: {
+            legend: { position: 'bottom' },
+            tooltip: { enabled: true }
+        }
+    }
+
+    const ctx = document.getElementById('chart').getContext('2d');
+    chart = new Chart(ctx, { type: 'pie', data, options });
+}
+
+function generateData() {
+    const selectInput = document.querySelector("#category-select").value;
+
+
+    let statistics;
+    if (selectInput !== "age") {
+        statistics = userArray.reduce((acc, user) => {
+            user[selectInput] in acc ? acc[user[selectInput]]++ : acc[user[selectInput]] = 1;
+            return acc;
+        }, {});
+    } else {
+        statistics = {
+            "18-25": 0,
+            "26-31": 0,
+            "32-40": 0,
+            "41-55": 0,
+            "56-75": 0,
+            "76+": 0
+        };
+
+        for (let user of userArray) {
+            if (user.age <= 25) {
+                statistics["18-25"]++;
+            } else if (user.age <= 31) {
+                statistics["26-31"]++;
+            } else if (user.age <= 40) {
+                statistics["32-40"]++;
+            } else if (user.age <= 55) {
+                statistics["41-55"]++;
+            } else if (user.age <= 75) {
+                statistics["56-75"]++;
+            } else {
+                statistics["76+"]++;
+            }
+        }
+    }
+
+    let labels = Object.keys(statistics);
+    console.log(labels)
+    if (labels[0] === "true" || labels[0] === "false" && labels.length === 2) {
+        if (labels === "true") {
+            labels = ["favorite", "not favorite"];
+        } else labels = ["not favorite", "favorite"]
+    }
+    const data = Object.values(statistics);
+    const backgroundColors = generateRandomColors(labels.length);
+
+    console.log(labels);
+
+    return {
+        labels,
+        datasets: [{
+            label: toSentenceCase(selectInput),
+            data,
+            backgroundColor: backgroundColors
+        }]
+    };;
+}
+
+function updateChart() {
+    const newData = generateData();
+    chart.data.labels = newData.labels;
+    chart.data.datasets = newData.datasets;
+    chart.update();
+}
+
+function toSentenceCase(str) {
+    if (!str || typeof str !== 'string') {
+        return '';
+    }
+    const lowercasedStr = str.toLowerCase();
+    return lowercasedStr.charAt(0).toUpperCase() + lowercasedStr.slice(1);
+}
+
+function generateRandomColors(count) {
+    const colors = [];
+    for (let i = 0; i < count; i++) {
+        const r = Math.floor(Math.random() * 255);
+        const g = Math.floor(Math.random() * 255);
+        const b = Math.floor(Math.random() * 255);
+        colors.push(`rgba(${r}, ${g}, ${b}, 0.7)`);
+    }
+    return colors;
+}
+
+function toWdrCountriesView(view) {
+    view.innerHTML = `<div id="wdr-countries-container"></div>`;
+    const countries = getCountriesFormattedArray();
+
+
+    countriesTable = new WebDataRocks({
+        container: "#wdr-countries-container",
+        toolbar: true,
+        report: {
+            dataSource: {
+                data: countries
+            },
+            slice: {
+            },
+            options: {
+                grid: {
+                    type: "flat"
+                }
+            }
+        }
+    });
+}
+
+function getCountriesFormattedArray() {
+    const countries = userArray.reduce((acc, user) => {
+        user.country in acc ? acc[user.country]++ : acc[user.country] = 1;
+        return acc;
+    }, {});
+
+
+    const formattedData = Object.entries(countries).map(([country, count]) => {
+        return {
+            "Country": country,
+            "Count": count
+        };
+    });
+    return formattedData;
+}
+
+function toWdrUsersView(view) {
+    view.innerHTML = `<div id="wdr-users-container"></div>`;
+    const flattenedData = flattenData(userArray);
+
+    usersTable = new WebDataRocks({
+        container: "#wdr-users-container",
+        toolbar: true,
+        report: {
+            dataSource: {
+                data: flattenedData
+            },
+            slice: {
+                rows: [
+                    { "uniqueName": "Full Name" },
+                    { "uniqueName": "Email" },
+                    { "uniqueName": "Age" },
+                    { "uniqueName": "Gender" },
+                    { "uniqueName": "Country" },
+                    { "uniqueName": "City" },
+                    { "uniqueName": "Course" },
+                    { "uniqueName": "Latitude" },
+                    { "uniqueName": "Longitude" },
+                    { "uniqueName": "Timezone" }
+                ]
+            },
+            options: {
+                grid: {
+                    type: "flat"
+                }
+            }
+        }
+    });
+}
+
+function updateWdrUsers() {
+    const newData = flattenData(userArray);
+    usersTable.updateData({
+        data: newData
+    });
+}
+
+function updateWdrCountries() {
+    const newData = getCountriesFormattedArray(userArray);
+    countriesTable.updateData({
+        data: newData
+    });
+}
+
+function flattenData(data) {
+    return data.map(user => {
+        return {
+            "Full Name": user.full_name,
+            "Email": user.email,
+            "Age": user.age,
+            "Gender": user.gender,
+            "Country": user.country,
+            "City": user.city,
+            "Course": user.course,
+            "Latitude": user.coordinates.latitude,
+            "Longitude": user.coordinates.longitude,
+            "Timezone": user.timezone.description
+        };
+    });
+}
+
 async function loadMoreTeachers() {
     try {
         const newData = await fetchData(10);
@@ -233,14 +524,19 @@ function populateTeacherDialog(dialog, teacher, map) {
     dialog.querySelector(".teacher-notes").textContent = teacher.note || "No notes available";
     dialog.querySelector(".teacher-birthday").textContent = `Next birthday in ${daysTillBDay} days`;
 
+    if (
+        teacher.coordinates &&
+        teacher.coordinates.latitude != null &&
+        teacher.coordinates.longitude != null
+    ) {
+        const coordinates = [];
+        coordinates.push(teacher.coordinates.latitude);
+        coordinates.push(teacher.coordinates.longitude);
 
-    const coordinates = [];
-    coordinates.push(teacher.coordinates.latitude);
-    coordinates.push(teacher.coordinates.longitude);
-
-    map.setView(coordinates, 14);
-    L.marker(coordinates).addTo(map);
-    map.invalidateSize();
+        map.setView(coordinates, 14);
+        L.marker(coordinates).addTo(map);
+        map.invalidateSize();
+    }
 
     const favoriteButton = dialog.querySelector('.teacher-favorite');
     favoriteButton.setAttribute('data-favorite', teacher.favorite);
@@ -253,7 +549,7 @@ function populateTeacherDialog(dialog, teacher, map) {
         img.src = teacher.picture_large;
         img.alt = teacher.full_name;
     } else {
-        img.src = "images/default.jpg";
+        img.src = "src/images/default.jpg";
         img.alt = "Teacher";
     }
 }
@@ -401,8 +697,23 @@ function convertDateInputToISO(dateString) {
 
 function loadData() {
     loadTopTeachers();
-    loadTable();
     loadFavorites();
+
+    let activeView = document.querySelector(".active");
+    switch (activeView.id) {
+        case "table-view":
+            loadTable();
+            break;
+        case "chart-view":
+            updateChart();
+            break;
+        case "wdr-countries-view":
+            updateWdrCountries();
+            break;
+        case "wdr-users-view":
+            updateWdrUsers();
+            break;
+    }
 }
 
 function loadTable() {
@@ -523,3 +834,4 @@ function loadTopTeachers() {
 
     grid.innerHTML = html;
 }
+

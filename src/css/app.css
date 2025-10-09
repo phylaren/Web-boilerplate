@@ -728,6 +728,32 @@ ul#search-results-grid {
     cursor: pointer;
 }
 
+#statistics-view{
+   display: flex;
+   justify-content: center;
+   gap: 1rem;
+
+   & .active {
+    background-color: var(--secondary-color);
+    color: white;
+   }
+}
+
+.chart-container{
+    
+    &>select{
+        width: 40%;
+        height: 3rem;
+        margin: 0 auto;
+        font-size: 1.2rem;
+    }
+
+    &>#chart{
+        width: 50%;
+        margin: 0 auto;
+    }
+}
+
 @media screen and (max-width: 1024px) {
     body {
         margin: 0 0;

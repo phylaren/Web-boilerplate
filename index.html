@@ -13,6 +13,10 @@
    <link rel="stylesheet" href="src/css/app.css">
    <script type="module" src="src/js/app.js" defer></script>
    <script type="module" src="src/js/script.js" defer></script>
+
+   <link href="https://cdn.webdatarocks.com/latest/webdatarocks.min.css" rel="stylesheet" />
+   <script src="https://cdn.webdatarocks.com/latest/webdatarocks.toolbar.min.js" defer></script>
+   <script src="https://cdn.webdatarocks.com/latest/webdatarocks.js" defer></script>
    <!-- <script type="module" src="./js/lalala.js" defer></script> -->
 </head>
 <!-- npm run dev -->
@@ -109,21 +113,29 @@
       <hr>
       <section class="statistics">
          <h1>Statistics</h1>
-         <table>
-            <thead>
-               <tr>
-                  <th id="full_name" class="sort" data-order="asc">Name</th>
-                  <th id="course" class="sort" data-order="asc">Speciality</th>
-                  <th id="age" class="sort" data-order="asc">Age</th>
-                  <th id="b_date" class="sort" data-order="asc">Birthday</th>
-                  <th id="country" class="sort" data-order="asc">Country</th>
-               </tr>
-            </thead>
-            <tbody>
-            </tbody>
-         </table>
-         <div>
-            <ul id="table-navigation"></ul>
+         <div id="statistics-view">
+            <button id="table-view" class="active">Table</button>
+            <button id="chart-view" class="">Charts</button>
+            <button id="wdr-countries-view" class="">Countries</button>
+            <button id="wdr-users-view" class="">All users</button>
+         </div>
+         <div id="view">
+            <table>
+               <thead>
+                  <tr>
+                     <th id="full_name" class="sort" data-order="asc">Name</th>
+                     <th id="course" class="sort" data-order="asc">Speciality</th>
+                     <th id="age" class="sort" data-order="asc">Age</th>
+                     <th id="b_date" class="sort" data-order="asc">Birthday</th>
+                     <th id="country" class="sort" data-order="asc">Country</th>
+                  </tr>
+               </thead>
+               <tbody>
+               </tbody>
+            </table>
+            <div>
+               <ul id="table-navigation"></ul>
+            </div>
          </div>
       </section>
       <hr>
